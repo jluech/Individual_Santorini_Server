@@ -4,7 +4,6 @@ import ch.uzh.ifi.seal.soprafs19.Application;
 import ch.uzh.ifi.seal.soprafs19.constant.UserStatus;
 import ch.uzh.ifi.seal.soprafs19.entity.User;
 import ch.uzh.ifi.seal.soprafs19.repository.UserRepository;
-import ch.uzh.ifi.seal.soprafs19.service.UserService;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,7 +36,8 @@ public class UserServiceTest {
         Assert.assertNull(userRepository.findByUsername("testUsername"));
 
         User testUser = new User();
-        testUser.setName("testName");
+        testUser.setFirstName("testFirstName");
+        testUser.setLastName("testLastName");
         testUser.setUsername("testUsername");
 
         User createdUser = userService.createUser(testUser);
