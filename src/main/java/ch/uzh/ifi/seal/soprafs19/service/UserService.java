@@ -19,7 +19,6 @@ public class UserService {
 
     private final UserRepository userRepository;
 
-
     @Autowired
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
@@ -44,6 +43,12 @@ public class UserService {
         log.debug("Created Information for User: {}", newUser);
         return newUser;
     }
+
+    public User updateUser(User updatedUser) {
+        return updatedUser;
+    }
+    //TODO: update existing user with new information
+    //TODO: return updated user information
 
     public void deleteUser(long id) {
         User user = this.userRepository.findById(id);
