@@ -34,10 +34,12 @@ public class UserController {
     //TODO: Return location: url<string> if successful;
     //TODO: return reason<string> otherwise
 
-    @GetMapping("/users/id/{id}")
+    @GetMapping("/users/{id}")
     @ResponseStatus(HttpStatus.OK)
     //TODO: throw HttpStatus.NOT_FOUND if user not found
-    User getUserId(@PathVariable long id) { return service.getSingleUser(id); }
+    User getUserId(@PathVariable long id) {
+        return service.getSingleUser(id);
+    }
     //TODO: path= "/users/{userId}"
     //TODO: return id<long>, username<string>, creation_date<date>, logged_in<boolean>, birthday<date>
 
@@ -52,7 +54,7 @@ public class UserController {
         }
     }
 
-    @PostMapping("/users/id/{id}")
+    @PostMapping("/users/{id}")
     @ResponseStatus(HttpStatus.ACCEPTED)
     User updateUser(@PathVariable long id, @RequestBody User updatedUser) {
         User currentUser =this.service.getSingleUser(id);
@@ -63,9 +65,8 @@ public class UserController {
         }
     }
 
-    @DeleteMapping("/users/id/{id}")
+    @DeleteMapping("/users/{id}")
     @ResponseStatus(HttpStatus.ACCEPTED)
     void deleteUser(@PathVariable long id) { service.deleteUser(id); }
-
 
 }

@@ -24,7 +24,7 @@ public class User implements Serializable {
 
 	private String firstname;
 
-	private Date birthDate;
+	private Date birthdate;
 	
 	@Column(nullable = false, unique = true) 
 	private String username;
@@ -66,17 +66,13 @@ public class User implements Serializable {
 		this.firstname = newfirstname;
 	}
 
-	public Date getBirthDate() { return birthDate; }
+	public Date getBirthdate() { return birthdate; }
 
-	public void setBirthDate(Date birthDate) { this.birthDate = birthDate; }
+	public void setBirthdate(Date birthDate) { this.birthdate = birthDate; }
 
-	public String getUsername() {
-		return username;
-	}
+	public String getUsername() { return username; }
 
-	public void setUsername(String username) {
-		this.username = username;
-	}
+	public void setUsername(String username) { this.username = username; }
 
 	public String getPassword() { return password; }
 
