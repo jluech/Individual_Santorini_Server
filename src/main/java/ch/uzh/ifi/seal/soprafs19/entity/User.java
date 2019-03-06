@@ -3,6 +3,7 @@ package ch.uzh.ifi.seal.soprafs19.entity;
 import ch.uzh.ifi.seal.soprafs19.constant.UserStatus;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -18,18 +19,28 @@ public class User implements Serializable {
 	@Id
 	@GeneratedValue
 	private Long id;
-	
-	@Column(nullable = false) 
-	private String name;
+
+	private String lastname;
+
+	private String firstname;
+
+	private Date birthDate;
 	
 	@Column(nullable = false, unique = true) 
 	private String username;
+
+	@Column(nullable = false)
+	private String password;
 	
 	@Column(nullable = false, unique = true) 
 	private String token;
 
 	@Column(nullable = false)
 	private UserStatus status;
+
+	@GeneratedValue
+	//@Column(nullable = false)
+	private Date creationDate;
 
 	public Long getId() {
 		return id;
@@ -39,13 +50,25 @@ public class User implements Serializable {
 		this.id = id;
 	}
 
-	public String getName() {
-		return name;
+	public String getLastName() {
+		return lastname;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setLastName(String newlastname) {
+		this.lastname = newlastname;
 	}
+
+	public String getFirstName() {
+		return firstname;
+	}
+
+	public void setFirstName(String newfirstname) {
+		this.firstname = newfirstname;
+	}
+
+	public Date getBirthDate() { return birthDate; }
+
+	public void setBirthDate(Date birthDate) { this.birthDate = birthDate; }
 
 	public String getUsername() {
 		return username;
@@ -54,6 +77,10 @@ public class User implements Serializable {
 	public void setUsername(String username) {
 		this.username = username;
 	}
+
+	public String getPassword() { return password; }
+
+	public void setPassword(String password) { this.password = password; }
 
 	public String getToken() {
 		return token;
@@ -70,6 +97,10 @@ public class User implements Serializable {
 	public void setStatus(UserStatus status) {
 		this.status = status;
 	}
+
+	public Date getCreationDate() { return creationDate; }
+
+	public void setCreationDate(Date creationDate) { this.creationDate = creationDate; }
 
 	@Override
 	public boolean equals(Object o) {

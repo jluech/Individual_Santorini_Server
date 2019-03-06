@@ -29,11 +29,24 @@ public class UserService {
         return this.userRepository.findAll();
     }
 
+    public User getSingleUser(long id) {
+        return this.userRepository.findById(id);
+    }
+
+    public User getSingleUser(String username) {
+        return this.userRepository.findByUsername(username);
+    }
+
     public User createUser(User newUser) {
         newUser.setToken(UUID.randomUUID().toString());
         newUser.setStatus(UserStatus.ONLINE);
         userRepository.save(newUser);
         log.debug("Created Information for User: {}", newUser);
         return newUser;
+    }
+
+    public void deleteUser(long id) {
+        User user = this.userRepository.findById(id);
+        this.userRepository.delete(user);
     }
 }
