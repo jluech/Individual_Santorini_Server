@@ -32,7 +32,7 @@ public class UserController {
         }
     }
     //TODO: Return location: url<string> if successful;
-    //TODO: return reason<string> otherwise
+    //TODO: return reason<string> otherwise //=> in throw included?
 
     @GetMapping("/users/{id}")
     @ResponseStatus(HttpStatus.OK)

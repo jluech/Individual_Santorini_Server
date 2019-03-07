@@ -4,7 +4,6 @@ import ch.uzh.ifi.seal.soprafs19.constant.UserStatus;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.text.SimpleDateFormat;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -26,6 +25,8 @@ public class User implements Serializable {
 	private String firstname;
 
 	private Date birthdate;
+
+	private String birthdateStr;
 	
 	@Column(nullable = false, unique = true) 
 	private String username;
@@ -70,6 +71,10 @@ public class User implements Serializable {
 	public Date getBirthdate() { return birthdate; }
 
 	public void setBirthdate(Date birthDate) { this.birthdate = birthDate; }
+
+	public String getBirthdateStr() { return birthdateStr; }
+
+	public void setBirthdateStr(String birthdateStr) { this.birthdateStr = birthdateStr; }
 
 	public String getUsername() { return username; }
 
