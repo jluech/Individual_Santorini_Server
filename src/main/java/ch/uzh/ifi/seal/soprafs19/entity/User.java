@@ -4,6 +4,7 @@ import ch.uzh.ifi.seal.soprafs19.constant.UserStatus;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.text.SimpleDateFormat;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

@@ -36,12 +36,15 @@ public class UserController {
 
     @GetMapping("/users/{id}")
     @ResponseStatus(HttpStatus.OK)
-    //TODO: throw HttpStatus.NOT_FOUND if user not found
     User getUserId(@PathVariable long id) {
-        return service.getSingleUser(id);
+        User foundUser = this.service.getSingleUser(id);
+        if(foundUser == null) {
+            throw new InexistingUser();
+        } else {
+            return foundUser;
+        }
     }
-    //TODO: path= "/users/{userId}"
-    //TODO: return id<long>, username<string>, creation_date<date>, logged_in<boolean>, birthday<date>
+    //TODO: exclude password in return id<long>, username<string>, creation_date<date>, logged_in<boolean>, birthday<date>
 
     @GetMapping("/users/username/{username}")
     @ResponseStatus(HttpStatus.OK)
@@ -54,7 +57,7 @@ public class UserController {
         }
     }
 
-    @PostMapping("/users/{id}")
+    @PutMapping("/users/{id}")
     @ResponseStatus(HttpStatus.ACCEPTED)
     User updateUser(@PathVariable long id, @RequestBody User updatedUser) {
         User currentUser =this.service.getSingleUser(id);
