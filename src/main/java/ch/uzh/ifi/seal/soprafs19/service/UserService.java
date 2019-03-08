@@ -39,7 +39,7 @@ public class UserService {
     }
 
     public User createUser(User newUser) {
-        SimpleDateFormat format = new SimpleDateFormat();
+        SimpleDateFormat format = new SimpleDateFormat("dd-MM-YYYY");//define date format
         String bdayStr = format.format(newUser.getBirthdate());//format Date type to String type
         newUser.setBirthdateStr(bdayStr);
 
@@ -75,12 +75,13 @@ public class UserService {
 
             currentUser.setBirthdate(updatingUser.getBirthdate());
 
-            SimpleDateFormat format = new SimpleDateFormat();
+            SimpleDateFormat format = new SimpleDateFormat("dd-MM-YYYY");
             String bdayStr = format.format(currentUser.getBirthdate());
             currentUser.setBirthdateStr(bdayStr);
 
             //TODO: log change of old to new value
         }
+        //TODO: save updated user in database
 
         return currentUser;//now is updated user
     }

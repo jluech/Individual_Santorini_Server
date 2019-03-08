@@ -5,9 +5,11 @@ import ch.uzh.ifi.seal.soprafs19.repository.UserRepository;
 import ch.uzh.ifi.seal.soprafs19.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*; //includes all mappings
+import java.util.logging.*;
 
 @RestController
 public class UserController {
+    private static final Logger loggerBE = Logger.getLogger("UserController");
 
     private final UserService service;
 
@@ -33,6 +35,7 @@ public class UserController {
     }
     //TODO: Return location: url<string> if successful;
     //TODO: return reason<string> otherwise //=> in throw included?
+    //TODO: Include creationDate
 
     @GetMapping("/users/{id}")
     @ResponseStatus(HttpStatus.OK)
@@ -41,6 +44,9 @@ public class UserController {
         if(foundUser == null) {
             throw new InexistingUser();
         } else {
+            loggerBE.info(String.format("username: %s", foundUser.getUsername()));
+            loggerBE.info(String.format("birthdate: %s", foundUser.getBirthdate()));
+            loggerBE.info(String.format("birthdateStr: %s", foundUser.getBirthdateStr()));
             return foundUser;
         }
     }
