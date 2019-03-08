@@ -43,6 +43,8 @@ public class User implements Serializable {
 	@Column(nullable = false)
 	private Date creationDate;
 
+	private String creationDateStr;
+
 	public Long getId() {
 		return id;
 	}
@@ -102,6 +104,10 @@ public class User implements Serializable {
 	public Date getCreationDate() { return creationDate; }
 
 	public void setCreationDate(Date creationDate) { this.creationDate = creationDate; }
+
+	public String getCreationDateStr() { return creationDateStr; }
+
+	public void setCreationDateStr(String creationDateStr) { this.creationDateStr = creationDateStr; }
 
 	@Override
 	public boolean equals(Object o) {
