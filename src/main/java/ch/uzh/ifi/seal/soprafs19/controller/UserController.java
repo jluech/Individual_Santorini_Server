@@ -1,20 +1,32 @@
 package ch.uzh.ifi.seal.soprafs19.controller;
 
 import ch.uzh.ifi.seal.soprafs19.entity.User;
-import ch.uzh.ifi.seal.soprafs19.repository.UserRepository;
 import ch.uzh.ifi.seal.soprafs19.service.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*; //includes all mappings
-import java.util.logging.*;
+
 
 @RestController
 public class UserController {
-    private static final Logger loggerBE = Logger.getLogger("UserController");
+    private final Logger log = LoggerFactory.getLogger(UserService.class);
 
     private final UserService service;
 
     UserController(UserService service) {
         this.service = service;
+    }
+
+    @GetMapping("/token/{token}/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    boolean validateToken(@PathVariable String token, @PathVariable long id) {
+        log.info(String.format("validating token for user %s with %s", id, token));
+        if(token==null || !this.service.validateUserToken(token, id)) {
+            throw new InexistingUser();
+        } else {
+            return true;
+        }
     }
 
     @GetMapping("/users")
@@ -33,9 +45,6 @@ public class UserController {
             return this.service.createUser(newUser);
         }
     }
-    //TODO: Return location: url<string> if successful;
-    //TODO: return reason<string> otherwise //=> in throw included?
-    //TODO: Include creationDate
 
     @GetMapping("/users/{id}")
     @ResponseStatus(HttpStatus.OK)
@@ -44,9 +53,9 @@ public class UserController {
         if(foundUser == null) {
             throw new InexistingUser();
         } else {
-            loggerBE.info(String.format("username: %s", foundUser.getUsername()));
-            loggerBE.info(String.format("birthdate: %s", foundUser.getBirthdate()));
-            loggerBE.info(String.format("birthdateStr: %s", foundUser.getBirthdateStr()));
+            //log.info(String.format("username: %s", foundUser.getUsername()));
+            //log.info(String.format("birthdate: %s", foundUser.getBirthdate()));
+            //log.info(String.format("birthdateStr: %s", foundUser.getBirthdateStr()));
             return foundUser;
         }
     }
@@ -63,13 +72,16 @@ public class UserController {
         }
     }
 
+    @CrossOrigin
     @PutMapping("/users/{id}")
     @ResponseStatus(HttpStatus.ACCEPTED)
     User updateUser(@PathVariable long id, @RequestBody User updatedUser) {
-        User currentUser =this.service.getSingleUser(id);
+        User currentUser = this.service.getSingleUser(id);
         if(currentUser == null) {
             throw new InexistingUser();
         } else {
+            log.info("HOORRAY, updating user {}", currentUser.getUsername());
+            //return currentUser;
             return this.service.updateUser(updatedUser);
         }
     }

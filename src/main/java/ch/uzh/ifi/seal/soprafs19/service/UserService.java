@@ -56,41 +56,50 @@ public class UserService {
     }
 
     public User updateUser(User updatingUser) {
-        User currentUser = getSingleUser(updatingUser.getId());
-        //lastname, firstname, birthdate(Str), username, password
+        log.info("got to updateUser");
+        long updateId = updatingUser.getId();
+        log.info("extracted id {}", updateId);
+        User currentUser = getSingleUser(updateId);
+        log.info("found currentUser {} with id {}", currentUser.getUsername(), currentUser.getId());
+        String upLastName = updatingUser.getLastName();
+        String upFirstName = updatingUser.getFirstName();
+        String upUsername = updatingUser.getUsername();
+        String upPassword = updatingUser.getPassword();
+        Date upBirthdate = updatingUser.getBirthdate();
+
         log.info("Updating user data for user {}", currentUser.getUsername());
 
-        if(!updatingUser.getLastName().equals(currentUser.getLastName())) {
+        if((upLastName != null) && (!upLastName.equals(currentUser.getLastName()))) {
             String oldLastName = currentUser.getLastName();
             currentUser.setLastName(updatingUser.getLastName());
             String newLastName = currentUser.getLastName();
             log.info("updated lastname from {} to {}", oldLastName, newLastName);
             //TODO: log change of old to new value
         }
-        if(!updatingUser.getFirstName().equals(currentUser.getFirstName())) {
+        if((upFirstName != null) && (!upFirstName.equals(currentUser.getFirstName()))) {
             String oldFirstName = currentUser.getFirstName();
             currentUser.setFirstName(updatingUser.getFirstName());
             String newFirstName = currentUser.getFirstName();
             log.info("updated firstname from {} to {}", oldFirstName, newFirstName);
             //TODO: log change of old to new value
         }
-        if(!updatingUser.getUsername().equals(currentUser.getUsername())) {
+        if((upUsername != null) && (!upUsername.equals(currentUser.getUsername()))) {
             String oldUsername = currentUser.getUsername();
             currentUser.setUsername(updatingUser.getUsername());
             String newUsername = currentUser.getUsername();
             log.info("updated username from {} to {}", oldUsername, newUsername);
             //TODO: log change of old to new value
         }
-        if(!updatingUser.getPassword().equals(currentUser.getPassword())) {
+        if((upPassword != null) && (!upPassword.equals(currentUser.getPassword()))) {
             String oldPassword = currentUser.getPassword();
             currentUser.setPassword(updatingUser.getPassword());
             String newPassword = currentUser.getPassword();
             log.info("updated password from {} to {}", oldPassword, newPassword);
             //TODO: log change of password w/o value, include errorReport value
         }
-        if(!updatingUser.getBirthdate().equals(currentUser.getBirthdate())) {//include changing birthdayStr
+        if((upBirthdate != null) && (!upBirthdate.equals(currentUser.getBirthdate()))) {//includes changing birthdayStr
             String oldBdayDate = currentUser.getBirthdateStr();
-            currentUser.setBirthdate(updatingUser.getBirthdate());
+            currentUser.setBirthdate(upBirthdate);
 
             SimpleDateFormat format = new SimpleDateFormat("dd-MM-YYYY");
             String bdayStr = format.format(currentUser.getBirthdate());
@@ -109,5 +118,11 @@ public class UserService {
     public void deleteUser(long id) {
         User user = this.userRepository.findById(id);
         this.userRepository.delete(user);
+    }
+
+    public boolean validateUserToken(String token, long id) {
+        User tokenUser = this.userRepository.findByToken(token);
+        User idUser = this.userRepository.findById(id);
+        return idUser.getToken().equals(tokenUser.getToken());
     }
 }
