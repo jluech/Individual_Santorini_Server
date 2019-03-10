@@ -49,6 +49,7 @@ public class UserService {
 
         newUser.setToken(UUID.randomUUID().toString());
         newUser.setStatus(UserStatus.ONLINE);
+        //TODO: remove online status=ONLINE and add in FE in login()
         userRepository.save(newUser);
         log.debug("Created Information for User: {}", newUser);
         log.info("Registered user {} on {}", newUser.getUsername(), newUser.getCreationDateStr());
@@ -56,7 +57,8 @@ public class UserService {
     }
 
     public User updateUser(User updatingUser) {
-        log.info("got to updateUser");
+        boolean hasChanged = false;
+
         long updateId = updatingUser.getId();
         log.info("extracted id {}", updateId);
         User currentUser = getSingleUser(updateId);
@@ -74,6 +76,7 @@ public class UserService {
             currentUser.setLastName(updatingUser.getLastName());
             String newLastName = currentUser.getLastName();
             log.info("updated lastname from {} to {}", oldLastName, newLastName);
+            hasChanged = true;
             //TODO: log change of old to new value
         }
         if((upFirstName != null) && (!upFirstName.equals(currentUser.getFirstName()))) {
@@ -81,20 +84,23 @@ public class UserService {
             currentUser.setFirstName(updatingUser.getFirstName());
             String newFirstName = currentUser.getFirstName();
             log.info("updated firstname from {} to {}", oldFirstName, newFirstName);
+            hasChanged = true;
             //TODO: log change of old to new value
         }
-        if((upUsername != null) && (!upUsername.equals(currentUser.getUsername()))) {
+        if((upUsername != null) && (!upUsername.equals("")) &&(!upUsername.equals(currentUser.getUsername()))) {
             String oldUsername = currentUser.getUsername();
             currentUser.setUsername(updatingUser.getUsername());
             String newUsername = currentUser.getUsername();
             log.info("updated username from {} to {}", oldUsername, newUsername);
+            hasChanged = true;
             //TODO: log change of old to new value
         }
-        if((upPassword != null) && (!upPassword.equals(currentUser.getPassword()))) {
+        if((upPassword != null) && (!upPassword.equals("")) && (!upPassword.equals(currentUser.getPassword()))) {
             String oldPassword = currentUser.getPassword();
             currentUser.setPassword(updatingUser.getPassword());
             String newPassword = currentUser.getPassword();
             log.info("updated password from {} to {}", oldPassword, newPassword);
+            hasChanged = true;
             //TODO: log change of password w/o value, include errorReport value
         }
         if((upBirthdate != null) && (!upBirthdate.equals(currentUser.getBirthdate()))) {//includes changing birthdayStr
@@ -106,7 +112,11 @@ public class UserService {
             currentUser.setBirthdateStr(bdayStr);
             String newBdayDate = currentUser.getBirthdateStr();
             log.info("updated birthday date from {} to {}", oldBdayDate, newBdayDate);
+            hasChanged = true;
             //TODO: log change of old to new value
+        }
+        if(!hasChanged) {
+            throw new BadUpdateRequest();
         }
         //TODO: save updated user in database
         userRepository.save(currentUser);
@@ -124,5 +134,10 @@ public class UserService {
         User tokenUser = this.userRepository.findByToken(token);
         User idUser = this.userRepository.findById(id);
         return idUser.getToken().equals(tokenUser.getToken());
+    }
+
+    public boolean validateUserPassword(String password, long id) {
+        User idUser = this.userRepository.findById(id);
+        return idUser.getPassword().equals(password);
     }
 }

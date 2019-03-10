@@ -18,12 +18,23 @@ public class UserController {
         this.service = service;
     }
 
-    @GetMapping("/token/{token}/{id}")
+    @GetMapping("/validate/token/{token}/{id}")
     @ResponseStatus(HttpStatus.OK)
     boolean validateToken(@PathVariable String token, @PathVariable long id) {
         log.info(String.format("validating token for user %s with %s", id, token));
         if(token==null || !this.service.validateUserToken(token, id)) {
             throw new InexistingUser();
+        } else {
+            return true;
+        }
+    }
+
+    @GetMapping("/validate/password/{password}/{id}")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    boolean validatePassword(@PathVariable String password, @PathVariable long id) {
+        log.info(String.format("validating password for user %s", id));
+        if(!this.service.validateUserPassword(password, id)) {
+            throw new InvalidPassword();
         } else {
             return true;
         }
@@ -80,8 +91,6 @@ public class UserController {
         if(currentUser == null) {
             throw new InexistingUser();
         } else {
-            log.info("HOORRAY, updating user {}", currentUser.getUsername());
-            //return currentUser;
             return this.service.updateUser(updatedUser);
         }
     }
