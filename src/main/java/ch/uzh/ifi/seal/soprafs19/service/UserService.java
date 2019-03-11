@@ -48,8 +48,6 @@ public class UserService {
         newUser.setBirthdateStr(bdayStr);
 
         newUser.setToken(UUID.randomUUID().toString());
-        newUser.setStatus(UserStatus.ONLINE);
-        //TODO: remove online status=ONLINE and add in FE in login()
         userRepository.save(newUser);
         log.debug("Created Information for User: {}", newUser);
         log.info("Registered user {} on {}", newUser.getUsername(), newUser.getCreationDateStr());
