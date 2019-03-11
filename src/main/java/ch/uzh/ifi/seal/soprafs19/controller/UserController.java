@@ -64,9 +64,6 @@ public class UserController {
         if(foundUser == null) {
             throw new InexistingUser();
         } else {
-            //log.info(String.format("username: %s", foundUser.getUsername()));
-            //log.info(String.format("birthdate: %s", foundUser.getBirthdate()));
-            //log.info(String.format("birthdateStr: %s", foundUser.getBirthdateStr()));
             return foundUser;
         }
     }
@@ -95,8 +92,31 @@ public class UserController {
         }
     }
 
+    @CrossOrigin
+    @PutMapping("/users/login/{username}")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    void loginUser(@PathVariable String username) {
+        User currentUser = this.service.getSingleUser(username);
+        if(currentUser == null) {
+            throw new InexistingUser();
+        } else {
+            this.service.loginUser(currentUser);
+        }
+    }
+
+    @CrossOrigin
+    @PutMapping("/users/logout/{username}")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    void logoutUser(@PathVariable String username) {
+        User currentUser = this.service.getSingleUser(username);
+        if(currentUser == null) {
+            throw new InexistingUser();
+        } else {
+            this.service.logoutUser(currentUser);
+        }
+    }
+
     @DeleteMapping("/users/{id}")
     @ResponseStatus(HttpStatus.ACCEPTED)
     void deleteUser(@PathVariable long id) { service.deleteUser(id); }
-
 }

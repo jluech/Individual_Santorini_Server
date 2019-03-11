@@ -130,6 +130,14 @@ public class UserService {
         this.userRepository.delete(user);
     }
 
+    public void loginUser(User user) {
+        user.setStatus(UserStatus.ONLINE);
+    }
+
+    public void logoutUser(User user) {
+        user.setStatus(UserStatus.OFFLINE);
+    }
+
     public boolean validateUserToken(String token, long id) {
         User tokenUser = this.userRepository.findByToken(token);
         User idUser = this.userRepository.findById(id);
