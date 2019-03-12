@@ -36,6 +36,7 @@ public class UserController {
         if(!this.service.validateUserPassword(password, id)) {
             throw new InvalidPassword();
         } else {
+            log.info("password is true");
             return true;
         }
     }
@@ -47,13 +48,16 @@ public class UserController {
 
     @PostMapping("/users")
     @ResponseStatus (HttpStatus.CREATED)
-    User createUser(@RequestBody User newUser) {
+    String createUser(@RequestBody User newUser) {
         //String createUser(@RequestBody User newUser) {
         String username = newUser.getUsername();
         if(this.service.getSingleUser(username) != null) {
             throw new ExistingUser();
         } else {
-            return this.service.createUser(newUser);
+            User createdUser = this.service.createUser(newUser);
+            String response = "/users/"+createdUser.getId().toString();
+            log.info(response);
+            return response;
         }
     }
 
@@ -67,7 +71,6 @@ public class UserController {
             return foundUser;
         }
     }
-    //TODO: exclude password in return id<long>, username<string>, creation_date<date>, logged_in<boolean>, birthday<date>
 
     @GetMapping("/users/username/{username}")
     @ResponseStatus(HttpStatus.OK)
@@ -82,13 +85,13 @@ public class UserController {
 
     @CrossOrigin
     @PutMapping("/users/{id}")
-    @ResponseStatus(HttpStatus.ACCEPTED)
-    User updateUser(@PathVariable long id, @RequestBody User updatedUser) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    void updateUser(@PathVariable long id, @RequestBody User updatedUser) {
         User currentUser = this.service.getSingleUser(id);
         if(currentUser == null) {
             throw new InexistingUser();
         } else {
-            return this.service.updateUser(updatedUser);
+            this.service.updateUser(updatedUser);
         }
     }
 
