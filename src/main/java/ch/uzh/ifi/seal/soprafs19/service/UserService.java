@@ -47,6 +47,7 @@ public class UserService {
         String bdayStr = bdayFormat.format(newUser.getBirthdate());//format Date type to String type
         newUser.setBirthdateStr(bdayStr);
 
+        newUser.setStatus(UserStatus.OFFLINE);
         newUser.setToken(UUID.randomUUID().toString());
         userRepository.save(newUser);
         log.debug("Created Information for User: {}", newUser);
@@ -56,11 +57,8 @@ public class UserService {
 
     public User updateUser(User updatingUser) {
         boolean hasChanged = false;
-
         long updateId = updatingUser.getId();
-        log.info("extracted id {}", updateId);
         User currentUser = getSingleUser(updateId);
-        log.info("found currentUser {} with id {}", currentUser.getUsername(), currentUser.getId());
         String upLastName = updatingUser.getLastName();
         String upFirstName = updatingUser.getFirstName();
         String upUsername = updatingUser.getUsername();
@@ -71,35 +69,32 @@ public class UserService {
 
         if((upLastName != null) && (!upLastName.equals(currentUser.getLastName()))) {
             String oldLastName = currentUser.getLastName();
-            currentUser.setLastName(updatingUser.getLastName());
+            currentUser.setLastName(upLastName);
             String newLastName = currentUser.getLastName();
             log.info("updated lastname from {} to {}", oldLastName, newLastName);
             hasChanged = true;
-            //TODO: log change of old to new value
         }
         if((upFirstName != null) && (!upFirstName.equals(currentUser.getFirstName()))) {
             String oldFirstName = currentUser.getFirstName();
-            currentUser.setFirstName(updatingUser.getFirstName());
+            currentUser.setFirstName(upFirstName);
             String newFirstName = currentUser.getFirstName();
             log.info("updated firstname from {} to {}", oldFirstName, newFirstName);
             hasChanged = true;
-            //TODO: log change of old to new value
         }
         if((upUsername != null) && (!upUsername.equals("")) &&(!upUsername.equals(currentUser.getUsername()))) {
             String oldUsername = currentUser.getUsername();
-            currentUser.setUsername(updatingUser.getUsername());
+            currentUser.setUsername(upUsername);
             String newUsername = currentUser.getUsername();
             log.info("updated username from {} to {}", oldUsername, newUsername);
             hasChanged = true;
-            //TODO: log change of old to new value
         }
         if((upPassword != null) && (!upPassword.equals("")) && (!upPassword.equals(currentUser.getPassword()))) {
+            //TODO: security reason: add current password for verification along with new password to PUT fetch change password
             String oldPassword = currentUser.getPassword();
-            currentUser.setPassword(updatingUser.getPassword());
+            currentUser.setPassword(upPassword);
             String newPassword = currentUser.getPassword();
-            log.info("updated password from {} to {}", oldPassword, newPassword);
+            log.info("updated password successfully");
             hasChanged = true;
-            //TODO: log change of password w/o value, include errorReport value
         }
         if((upBirthdate != null) && (!upBirthdate.equals(currentUser.getBirthdate()))) {//includes changing birthdayStr
             String oldBdayDate = currentUser.getBirthdateStr();
@@ -111,17 +106,13 @@ public class UserService {
             String newBdayDate = currentUser.getBirthdateStr();
             log.info("updated birthday date from {} to {}", oldBdayDate, newBdayDate);
             hasChanged = true;
-            //TODO: log change of old to new value
         }
         if(!hasChanged) {
             throw new BadUpdateRequest();
         }
-        //TODO: save updated user in database
         userRepository.save(currentUser);
         return currentUser;//now is updated user
     }
-    //TODO: update existing user with new information
-    //TODO: return updated user information
 
     public void deleteUser(long id) {
         User user = this.userRepository.findById(id);
@@ -130,10 +121,12 @@ public class UserService {
 
     public void loginUser(User user) {
         user.setStatus(UserStatus.ONLINE);
+        userRepository.save(user);
     }
 
     public void logoutUser(User user) {
         user.setStatus(UserStatus.OFFLINE);
+        userRepository.save(user);
     }
 
     public boolean validateUserToken(String token, long id) {

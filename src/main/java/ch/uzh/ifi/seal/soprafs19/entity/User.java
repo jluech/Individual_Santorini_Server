@@ -1,6 +1,9 @@
 package ch.uzh.ifi.seal.soprafs19.entity;
 
 import ch.uzh.ifi.seal.soprafs19.constant.UserStatus;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -11,6 +14,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
 @Entity
+@JsonIgnoreProperties(value={"password"}, allowSetters = true)
 public class User implements Serializable {
 	
 
@@ -24,6 +28,7 @@ public class User implements Serializable {
 
 	private String firstname;
 
+	@Column(nullable = false)
 	private Date birthdate;
 
 	private String birthdateStr;
@@ -32,7 +37,12 @@ public class User implements Serializable {
 	private String username;
 
 	@Column(nullable = false)
+	@JsonProperty("password")
 	private String password;
+
+	//TODO: attach currentPassword to methods (create, update, get)
+	//@Column(nullable = false)
+	//private String currentPassword;
 	
 	@Column(nullable = false, unique = true) 
 	private String token;
@@ -49,9 +59,7 @@ public class User implements Serializable {
 		return id;
 	}
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+	public void setId(Long id) { this.id = id; }
 
 	public String getLastName() {
 		return lastname;
@@ -81,8 +89,11 @@ public class User implements Serializable {
 
 	public void setUsername(String username) { this.username = username; }
 
+	//TODO: security reason: add currentPassword field for which to check against before assigning new password value
+	//@JsonIgnore
 	public String getPassword() { return password; }
 
+	//@JsonProperty
 	public void setPassword(String password) { this.password = password; }
 
 	public String getToken() {
