@@ -4,8 +4,6 @@ import ch.uzh.ifi.seal.soprafs19.Application;
 import ch.uzh.ifi.seal.soprafs19.constant.UserStatus;
 import ch.uzh.ifi.seal.soprafs19.entity.User;
 import ch.uzh.ifi.seal.soprafs19.repository.UserRepository;
-import ch.uzh.ifi.seal.soprafs19.service.UserService;
-import ch.uzh.ifi.seal.soprafs19.controller.UserController;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -42,19 +40,97 @@ public class UserControllerTest {
     private UserRepository userRepository;
 
     @Autowired
-    private UserService userService;
-
-    @Autowired
     private UserController userController;
 
     @Test
     public void validateToken() {
-        User testControllerValidateTokenUser = new User();
+        Assert.assertNull(userRepository.findByUsername("testControllerValidateTokenUsername"));
 
+        User testControllerValidateTokenUser = new User();
+        testControllerValidateTokenUser.setUsername("testControllerValidateTokenUsername");
+        testControllerValidateTokenUser.setPassword("testControllerValidateTokenPassword");
+        testControllerValidateTokenUser.setBirthdate(today);
+        testControllerValidateTokenUser.setCreationDate(today);
+
+        userController.createUser(testControllerValidateTokenUser);
+        String testControllerValidateTokenUserUsername = testControllerValidateTokenUser.getUsername();
+        User createdControllerValidateTokenUser = userRepository.findByUsername(testControllerValidateTokenUserUsername);
+        String createdControllerValidateTokenUserToken = createdControllerValidateTokenUser.getToken();
+        long createdControllerValidateTokenUserId = createdControllerValidateTokenUser.getId();
+
+        Assert.assertTrue(userController.validateToken(createdControllerValidateTokenUserToken, createdControllerValidateTokenUserId));
+        Assert.assertTrue(userController.validateToken(createdControllerValidateTokenUser.getToken(), createdControllerValidateTokenUser.getId()));
+
+        userController.deleteUser(createdControllerValidateTokenUser.getId()); //cleanup
     }
 
+    @Test(expected = InexistingUser.class)
+    public void validateTokenInexisting() {
+        Assert.assertNull(userRepository.findByUsername("testControllerValidateTokenUsernameInexisting"));
+
+        User testControllerValidateTokenUserInexisting = new User();
+        testControllerValidateTokenUserInexisting.setUsername("testControllerValidateTokenUsernameInexisting");
+        testControllerValidateTokenUserInexisting.setPassword("testControllerValidateTokenPasswordInexisting");
+        testControllerValidateTokenUserInexisting.setBirthdate(today);
+        testControllerValidateTokenUserInexisting.setCreationDate(today);
+
+        userController.createUser(testControllerValidateTokenUserInexisting);
+        String testControllerValidateTokenUserUsernameInexisting = testControllerValidateTokenUserInexisting.getUsername();
+        User createdControllerValidateTokenUserInexisting = userRepository.findByUsername(testControllerValidateTokenUserUsernameInexisting);
+        String createdControllerValidateTokenUserTokenInexisting = createdControllerValidateTokenUserInexisting.getToken();
+        createdControllerValidateTokenUserTokenInexisting = createdControllerValidateTokenUserTokenInexisting+"_";
+        long createdControllerValidateTokenUserIdInexisting = createdControllerValidateTokenUserInexisting.getId();
+
+        Assert.assertTrue(userController.validateToken(createdControllerValidateTokenUserTokenInexisting,
+                createdControllerValidateTokenUserIdInexisting));//throws InexistingUser()
+
+        String createdControllerValidateTokenEmptyToken = "";
+        Assert.assertTrue(userController.validateToken(createdControllerValidateTokenEmptyToken,
+                createdControllerValidateTokenUserIdInexisting));//throws InexistingUser()
+
+        userController.deleteUser(createdControllerValidateTokenUserInexisting.getId()); //cleanup
+    }
+
+    @Test(expected = InvalidToken.class)
+    public void validateTokenInvalid() {
+        Assert.assertNull(userRepository.findByUsername("testControllerValidateTokenUsernameInvalid"));
+
+        User testControllerValidateTokenUserInvalid = new User();
+        testControllerValidateTokenUserInvalid.setUsername("testControllerValidateTokenUsernameInvalid");
+        testControllerValidateTokenUserInvalid.setPassword("testControllerValidateTokenPasswordInvalid");
+        testControllerValidateTokenUserInvalid.setBirthdate(today);
+        testControllerValidateTokenUserInvalid.setCreationDate(today);
+
+        userController.createUser(testControllerValidateTokenUserInvalid);
+        String testControllerValidateTokenUserUsername = testControllerValidateTokenUserInvalid.getUsername();
+        User createdControllerValidateTokenUserInvalid = userRepository.findByUsername(testControllerValidateTokenUserUsername);
+        long createdControllerValidateTokenUserIdInvalid = createdControllerValidateTokenUserInvalid.getId();
+
+        String createdControllerValidateTokenNullToken = null;
+        Assert.assertTrue(userController.validateToken(createdControllerValidateTokenNullToken, createdControllerValidateTokenUserIdInvalid));//throws InvalidToken()
+
+        User testControllerValidateTokenUserDifferent = new User();
+        testControllerValidateTokenUserDifferent.setUsername("testControllerValidateTokenUsernameDifferent");
+        testControllerValidateTokenUserDifferent.setPassword("testControllerValidateTokenPasswordDifferent");
+        testControllerValidateTokenUserDifferent.setBirthdate(today);
+        testControllerValidateTokenUserDifferent.setCreationDate(today);
+
+        userController.createUser(testControllerValidateTokenUserDifferent);
+        String testControllerValidateTokenUserUsernameDifferent = testControllerValidateTokenUserInvalid.getUsername();
+        User createdControllerValidateTokenUserDifferent = userRepository.findByUsername(testControllerValidateTokenUserUsernameDifferent);
+
+        String createdControllerValidateTokenDifferentToken = createdControllerValidateTokenUserDifferent.getToken();
+        Assert.assertTrue(userController.validateToken(createdControllerValidateTokenDifferentToken, createdControllerValidateTokenUserIdInvalid));//throws InvalidToken()
+
+        userController.deleteUser(createdControllerValidateTokenUserInvalid.getId()); //cleanup
+    }
+
+    //TODO: include error cases
+    //TODO: check for response status (error state via Exception class, maybe check for success via new success exception?)
     @Test
     public void validatePassword() {
+        Assert.assertNull(userRepository.findByUsername("testControllerValidatePasswordUsername"));
+
         User testControllerValidatePasswordUser = new User();
         testControllerValidatePasswordUser.setUsername("testControllerValidatePasswordUsername");
         testControllerValidatePasswordUser.setPassword("testControllerValidatePasswordPassword");
@@ -69,6 +145,62 @@ public class UserControllerTest {
 
         Assert.assertTrue(userController.validatePassword(createdControllerValidatePasswordUserPassword, createdControllerValidatePasswordUserId));
         Assert.assertTrue(userController.validatePassword(createdControllerValidatePasswordUser.getPassword(), createdControllerValidatePasswordUser.getId()));
+
+        userController.deleteUser(createdControllerValidatePasswordUser.getId()); //cleanup
+    }
+
+    @Test(expected = InvalidPassword.class)
+    public void validatePasswordInvalid() {
+        Assert.assertNull(userRepository.findByUsername("testControllerValidatePasswordUsernameInvalid"));
+
+        User testControllerValidatePasswordUserInvalid = new User();
+        testControllerValidatePasswordUserInvalid.setUsername("testControllerValidatePasswordUsernameInvalid");
+        testControllerValidatePasswordUserInvalid.setPassword("testControllerValidatePasswordPasswordInvalid");
+        testControllerValidatePasswordUserInvalid.setCreationDate(today);
+        testControllerValidatePasswordUserInvalid.setBirthdate(today);
+
+        userController.createUser(testControllerValidatePasswordUserInvalid);
+        String testControllerValidatePasswordUserUsernameInvalid = testControllerValidatePasswordUserInvalid.getUsername();
+        User createdControllerValidatePasswordUserInvalid = userRepository.findByUsername(testControllerValidatePasswordUserUsernameInvalid);
+        String createdControllerValidatePasswordUserPasswordInvalid = createdControllerValidatePasswordUserInvalid.getPassword();
+        createdControllerValidatePasswordUserPasswordInvalid = createdControllerValidatePasswordUserPasswordInvalid+"_";
+        long createdControllerValidatePasswordUserIdInvalid = createdControllerValidatePasswordUserInvalid.getId();
+
+        Assert.assertTrue(userController.validatePassword(createdControllerValidatePasswordUserPasswordInvalid,
+                createdControllerValidatePasswordUserIdInvalid));//throws InvalidPassword()
+
+        String createdControllerValidatePasswordNullPassword = null;
+        Assert.assertTrue(userController.validatePassword(createdControllerValidatePasswordNullPassword,
+                createdControllerValidatePasswordUserIdInvalid));//throws InvalidPassword()
+
+        String createdControllerValidatePasswordEmptyPassword = "";
+        Assert.assertTrue(userController.validatePassword(createdControllerValidatePasswordEmptyPassword,
+                createdControllerValidatePasswordUserIdInvalid));//throws InvalidPassword()
+
+        userController.deleteUser(createdControllerValidatePasswordUserInvalid.getId()); //cleanup
+    }
+
+    @Test(expected = InexistingUser.class)
+    public void validatePasswordInexisting() {
+        Assert.assertNull(userRepository.findByUsername("testControllerValidatePasswordUsernameInexisting"));
+
+        User testControllerValidatePasswordUserInexisting = new User();
+        testControllerValidatePasswordUserInexisting.setUsername("testControllerValidatePasswordUsernameInexisting");
+        testControllerValidatePasswordUserInexisting.setPassword("testControllerValidatePasswordPasswordInexisting");
+        testControllerValidatePasswordUserInexisting.setCreationDate(today);
+        testControllerValidatePasswordUserInexisting.setBirthdate(today);
+
+        userController.createUser(testControllerValidatePasswordUserInexisting);
+        String testControllerValidatePasswordUserUsernameInexisting = testControllerValidatePasswordUserInexisting.getUsername();
+        User createdControllerValidatePasswordUserInexisting = userRepository.findByUsername(testControllerValidatePasswordUserUsernameInexisting);
+        String createdControllerValidatePasswordUserPasswordInexisting = createdControllerValidatePasswordUserInexisting.getPassword();
+        createdControllerValidatePasswordUserPasswordInexisting = createdControllerValidatePasswordUserPasswordInexisting+"_";
+        long createdControllerValidatePasswordUserIdInexisting = createdControllerValidatePasswordUserInexisting.getId();
+
+        Assert.assertTrue(userController.validatePassword(createdControllerValidatePasswordUserPasswordInexisting,
+                (-1)*createdControllerValidatePasswordUserIdInexisting));//throws InexistingUser()
+
+        userController.deleteUser(createdControllerValidatePasswordUserInexisting.getId()); //cleanup
     }
 
     @Test
@@ -77,6 +209,8 @@ public class UserControllerTest {
 
     @Test
     public void createUser() {
+        Assert.assertNull(userRepository.findByUsername("testControllerCreateUsername"));
+
         User testControllerCreateUser = new User();
         testControllerCreateUser.setFirstName("testControllerCreateFirstName");
         testControllerCreateUser.setLastName("testControllerCreateLastName");
@@ -96,8 +230,6 @@ public class UserControllerTest {
         long createdControllerCreateUserId = Long.parseLong(createdControllerCreateUserIdString);
         User createdControllerCreateUser = userRepository.findById(createdControllerCreateUserId);
 
-        //TODO: check for response status
-
         Assert.assertEquals(testControllerCreateUser.getUsername(), createdControllerCreateUser.getUsername());
         Assert.assertEquals(testControllerCreateUser.getFirstName(), createdControllerCreateUser.getFirstName());
         Assert.assertEquals(testControllerCreateUser.getLastName(), createdControllerCreateUser.getLastName());
@@ -106,10 +238,45 @@ public class UserControllerTest {
         Assert.assertEquals(testControllerCreateUser.getCreationDate(), createdControllerCreateUser.getCreationDate());
         Assert.assertNotNull(createdControllerCreateUser.getId());
         Assert.assertNotNull(createdControllerCreateUser.getToken());
+
+        userController.deleteUser(createdControllerCreateUser.getId()); //cleanup
+    }
+
+    @Test(expected = ExistingUser.class)
+    public void createUserExisting() {
+        Assert.assertNull(userRepository.findByUsername("testControllerCreateUsernameExisting"));
+
+        User testControllerCreateUserExisting = new User();
+        testControllerCreateUserExisting.setFirstName("testControllerCreateFirstNameExisting");
+        testControllerCreateUserExisting.setLastName("testControllerCreateLastNameExisting");
+        testControllerCreateUserExisting.setUsername("testControllerCreateUsernameExisting");
+        testControllerCreateUserExisting.setPassword("testControllerCreatePasswordExisting");
+        testControllerCreateUserExisting.setBirthdate(today);
+        testControllerCreateUserExisting.setCreationDate(today);
+
+        String createdControllerCreateUserUrlExisting = userController.createUser(testControllerCreateUserExisting);
+        Assert.assertTrue(createdControllerCreateUserUrlExisting.startsWith("/users/"));
+
+        String createdControllerCreateUserIdStringExisting = createdControllerCreateUserUrlExisting.substring(7);
+        long createdControllerCreateUserIdExisting = Long.parseLong(createdControllerCreateUserIdStringExisting);
+        User createdControllerCreateUserExisting = userRepository.findById(createdControllerCreateUserIdExisting);
+
+        User testControllerCreateUserDefinitelyExisting = new User();
+        testControllerCreateUserDefinitelyExisting.setUsername("testControllerCreateUsernameExisting");//same Username to find user
+        testControllerCreateUserDefinitelyExisting.setPassword("testControllerCreatePasswordDefinitelyExisting");
+        testControllerCreateUserDefinitelyExisting.setBirthdate(today);
+        testControllerCreateUserDefinitelyExisting.setCreationDate(today);
+
+        String createdControllerCreateUserExistingUrl = userController.createUser(testControllerCreateUserDefinitelyExisting);//throws ExistingUser()
+        Assert.assertNull(createdControllerCreateUserExistingUrl);
+
+        userController.deleteUser(createdControllerCreateUserExisting.getId()); //cleanup
     }
 
     @Test
     public void getUserId() {
+        Assert.assertNull(userRepository.findByUsername("testControllerGetIdUsername"));
+
         User testControllerGetIdUser = new User();
         testControllerGetIdUser.setUsername("testControllerGetIdUsername");
         testControllerGetIdUser.setPassword("testControllerGetIdPassword");
@@ -128,10 +295,34 @@ public class UserControllerTest {
         User testControllerGetIdFoundUser = userController.getUserId(createdControllerGetIdUserId);
         Assert.assertEquals(testControllerGetIdUser, testControllerGetIdFoundUser);
         Assert.assertEquals(testControllerGetIdUser.getUsername(), testControllerGetIdFoundUser.getUsername());
+
+        userController.deleteUser(createdControllerGetIdUser.getId()); //cleanup
+    }
+
+    @Test(expected = InexistingUser.class)
+    public void getUserIdInexisting() {
+        Assert.assertNull(userRepository.findByUsername("testControllerGetIdUsernameInexisting"));
+
+        User testControllerGetIdUserInexisting = new User();
+        testControllerGetIdUserInexisting.setUsername("testControllerGetIdUsernameInexisting");
+        testControllerGetIdUserInexisting.setPassword("testControllerGetIdPasswordInexisting");
+        testControllerGetIdUserInexisting.setBirthdate(today);
+        testControllerGetIdUserInexisting.setCreationDate(today);
+
+        userController.createUser(testControllerGetIdUserInexisting);
+        String testControllerGetIdUserUsernameInexisting = testControllerGetIdUserInexisting.getUsername();
+        User createdControllerGetIdUserInexisting = userRepository.findByUsername(testControllerGetIdUserUsernameInexisting);
+
+        User createdControllerGetIdUserDefinitelyInexisting = userController.getUserId((-1)*createdControllerGetIdUserInexisting.getId());//throws InexistingUser()
+        Assert.assertNull(createdControllerGetIdUserDefinitelyInexisting);
+
+        userController.deleteUser(createdControllerGetIdUserInexisting.getId()); //cleanup
     }
 
     @Test
     public void getUserUsername() {
+        Assert.assertNull(userRepository.findByUsername("testControllerGetUsernameUsername"));
+
         User testControllerGetUsernameUser = new User();
         testControllerGetUsernameUser.setUsername("testControllerGetUsernameUsername");
         testControllerGetUsernameUser.setPassword("testControllerGetUsernamePassword");
@@ -150,10 +341,36 @@ public class UserControllerTest {
         User testControllerGetUsernameFoundUser = userController.getUserUsername(createdControllerGetUsernameUserUsername);
         Assert.assertEquals(testControllerGetUsernameUser, testControllerGetUsernameFoundUser);
         Assert.assertEquals(testControllerGetUsernameUser.getUsername(), testControllerGetUsernameFoundUser.getUsername());
+
+        userController.deleteUser(createdControllerGetUsernameUser.getId()); //cleanup
     }
 
+    @Test(expected = InexistingUser.class)
+    public void getUserUsernameInexisting() {
+        Assert.assertNull(userRepository.findByUsername("testControllerGetUsernameUsernameInexisting"));
+
+        User testControllerGetUsernameUserInexisting = new User();
+        testControllerGetUsernameUserInexisting.setUsername("testControllerGetUsernameUsernameInexisting");
+        testControllerGetUsernameUserInexisting.setPassword("testControllerGetUsernamePasswordInexisting");
+        testControllerGetUsernameUserInexisting.setBirthdate(today);
+        testControllerGetUsernameUserInexisting.setCreationDate(today);
+
+        userController.createUser(testControllerGetUsernameUserInexisting);
+        String testControllerGetUsernameUserUsernameInexisting = testControllerGetUsernameUserInexisting.getUsername();
+        User createdControllerGetUsernameUserInexisting = userRepository.findByUsername(testControllerGetUsernameUserUsernameInexisting);
+
+        User createdControllerGetUsernameUserDefinitelyInexisting = userController.getUserUsername(createdControllerGetUsernameUserInexisting.getUsername()+"&_");
+        Assert.assertNull(createdControllerGetUsernameUserDefinitelyInexisting);
+
+        userController.deleteUser(createdControllerGetUsernameUserInexisting.getId()); //cleanup
+    }
+
+    //TODO: add error update test
     @Test
     public void updateUser() {
+        Assert.assertNull(userRepository.findByUsername("testControllerUpdateUsername"));
+        Assert.assertNull(userRepository.findByUsername("testControllerUpdatedUname"));
+
         User testControllerUpdateUser = new User();
         testControllerUpdateUser.setFirstName("testControllerUpdateFirstName");
         testControllerUpdateUser.setLastName("testControllerUpdateLastName");
@@ -182,17 +399,172 @@ public class UserControllerTest {
         Assert.assertEquals(testControllerUpdateUserUpdated.getLastName(), createdControllerUpdateUserOriginal.getLastName());
         Assert.assertEquals(testControllerUpdateUserUpdated.getUsername(), createdControllerUpdateUserOriginal.getUsername());
         Assert.assertEquals(testControllerUpdateUserUpdated.getPassword(), createdControllerUpdateUserOriginal.getPassword());
+
+        userController.deleteUser(createdControllerUpdateUserOriginal.getId()); //cleanup
     }
 
     @Test
     public void loginUser() {
+        Assert.assertNull(userRepository.findByUsername("testControllerLoginUsername"));
+
+        User testControllerLoginUser = new User();
+        testControllerLoginUser.setUsername("testControllerLoginUsername");
+        testControllerLoginUser.setPassword("testControllerLoginPassword");
+        testControllerLoginUser.setBirthdate(today);
+        testControllerLoginUser.setCreationDate(today);
+        String testControllerLoginUsername = testControllerLoginUser.getUsername();
+
+        userController.createUser(testControllerLoginUser);
+        User createdControllerLoginUser = userRepository.findByUsername(testControllerLoginUsername);
+        Assert.assertEquals(createdControllerLoginUser.getStatus(), UserStatus.OFFLINE);
+
+        userController.loginUser(createdControllerLoginUser.getUsername());
+        //userController.loginUser(createdControllerLoginUser.getUsername(), createdControllerLoginUser.getPassword());
+        Assert.assertEquals(createdControllerLoginUser.getStatus(), UserStatus.ONLINE);
+
+        userController.deleteUser(createdControllerLoginUser.getId()); //cleanup
     }
+
+    @Test(expected = InexistingUser.class)
+    public void loginUserInexisting() {
+        Assert.assertNull(userRepository.findByUsername("testControllerLoginUsernameInexisting"));
+
+        User testControllerLoginUserInexisting = new User();
+        testControllerLoginUserInexisting.setUsername("testControllerLoginUsernameInexisting");
+        testControllerLoginUserInexisting.setPassword("testControllerLoginPasswordInexisting");
+        testControllerLoginUserInexisting.setBirthdate(today);
+        testControllerLoginUserInexisting.setCreationDate(today);
+        String testControllerLoginUsernameInexisting = testControllerLoginUserInexisting.getUsername();
+
+        userController.createUser(testControllerLoginUserInexisting);
+        User createdControllerLoginUserInexisting = userRepository.findByUsername(testControllerLoginUsernameInexisting);
+        Assert.assertEquals(createdControllerLoginUserInexisting.getStatus(), UserStatus.OFFLINE);
+
+        userController.loginUser(createdControllerLoginUserInexisting.getUsername()+"&_");//throws InexistingUser()
+        //userController.loginUser(createdControllerLoginUserInexisting.getUsername()+"&_", createdControllerLoginUserInexisting.getPassword());//throws InexistingUser()
+        Assert.assertNotEquals(createdControllerLoginUserInexisting.getStatus(), UserStatus.ONLINE);
+        Assert.assertEquals(createdControllerLoginUserInexisting.getStatus(), UserStatus.OFFLINE);
+
+        userController.deleteUser(createdControllerLoginUserInexisting.getId()); //cleanup
+    }
+
+    /*
+    @Test(expected = InvalidPassword.class)
+    public void loginUserInvalid() {
+        Assert.assertNull(userRepository.findByUsername("testControllerLoginUsernameInvalid"));
+
+        User testControllerLoginUserInvalid = new User();
+        testControllerLoginUserInvalid.setUsername("testControllerLoginUsernameInvalid");
+        testControllerLoginUserInvalid.setPassword("testControllerLoginPasswordInvalid");
+        testControllerLoginUserInvalid.setBirthdate(today);
+        testControllerLoginUserInvalid.setCreationDate(today);
+        String testControllerLoginUsernameInvalid = testControllerLoginUserInvalid.getUsername();
+
+        userController.createUser(testControllerLoginUserInvalid);
+        User createdControllerLoginUserInvalid = userRepository.findByUsername(testControllerLoginUsernameInvalid);
+        Assert.assertEquals(createdControllerLoginUserInvalid.getStatus(), UserStatus.OFFLINE);
+
+        userController.loginUser(createdControllerLoginUserInvalid.getUsername());//throws InvalidPassword()
+        //userController.loginUser(createdControllerLoginUserInvalid.getUsername(), createdControllerLoginUserInvalid.getPassword()+"_");//throws InvalidPassword()
+        Assert.assertNotEquals(createdControllerLoginUserInvalid.getStatus(), UserStatus.ONLINE);
+        Assert.assertEquals(createdControllerLoginUserInvalid.getStatus(), UserStatus.OFFLINE);
+
+        userController.deleteUser(createdControllerLoginUserInvalid.getId()); //cleanup
+    }
+    */
 
     @Test
     public void logoutUser() {
+        Assert.assertNull(userRepository.findByUsername("testControllerLogoutUsername"));
+
+        User testControllerLogoutUser = new User();
+        testControllerLogoutUser.setUsername("testControllerLogoutUsername");
+        testControllerLogoutUser.setPassword("testControllerLogoutPassword");
+        testControllerLogoutUser.setBirthdate(today);
+        testControllerLogoutUser.setCreationDate(today);
+        String testControllerLogoutUsername = testControllerLogoutUser.getUsername();
+
+        userController.createUser(testControllerLogoutUser);
+        User createdControllerLogoutUser = userRepository.findByUsername(testControllerLogoutUsername);
+        Assert.assertEquals(createdControllerLogoutUser.getStatus(), UserStatus.OFFLINE);
+
+        userController.loginUser(createdControllerLogoutUser.getUsername());
+        Assert.assertEquals(createdControllerLogoutUser.getStatus(), UserStatus.ONLINE);
+
+        userController.logoutUser(createdControllerLogoutUser.getUsername());
+        Assert.assertEquals(createdControllerLogoutUser.getStatus(), UserStatus.OFFLINE);
+
+        userController.deleteUser(createdControllerLogoutUser.getId()); //cleanup
+    }
+
+    @Test(expected = InexistingUser.class)
+    public void logoutUserInexisting() {
+        Assert.assertNull(userRepository.findByUsername("testControllerLogoutUsernameInexisting"));
+
+        User testControllerLogoutUserInexisting = new User();
+        testControllerLogoutUserInexisting.setUsername("testControllerLogoutUsernameInexisting");
+        testControllerLogoutUserInexisting.setPassword("testControllerLogoutPasswordInexisting");
+        testControllerLogoutUserInexisting.setBirthdate(today);
+        testControllerLogoutUserInexisting.setCreationDate(today);
+        String testControllerLogoutUsernameInexisting = testControllerLogoutUserInexisting.getUsername();
+
+        userController.createUser(testControllerLogoutUserInexisting);
+        User createdControllerLogoutUserInexisting = userRepository.findByUsername(testControllerLogoutUsernameInexisting);
+        Assert.assertEquals(createdControllerLogoutUserInexisting.getStatus(), UserStatus.OFFLINE);
+
+        userController.loginUser(createdControllerLogoutUserInexisting.getUsername());
+        Assert.assertEquals(createdControllerLogoutUserInexisting.getStatus(), UserStatus.ONLINE);
+
+        userController.logoutUser(createdControllerLogoutUserInexisting.getUsername()+"&_");//throws InexistingUser()
+        Assert.assertNotEquals(createdControllerLogoutUserInexisting.getStatus(), UserStatus.OFFLINE);
+        Assert.assertEquals(createdControllerLogoutUserInexisting.getStatus(), UserStatus.ONLINE);
+
+        userController.deleteUser(createdControllerLogoutUserInexisting.getId()); //cleanup
     }
 
     @Test
     public void deleteUser() {
+        Assert.assertNull(userRepository.findByUsername("testControllerDeleteUsername"));
+
+        User testControllerDeleteUser = new User();
+        testControllerDeleteUser.setUsername("testControllerDeleteUsername");
+        testControllerDeleteUser.setPassword("testControllerDeletePassword");
+        testControllerDeleteUser.setBirthdate(today);
+        testControllerDeleteUser.setCreationDate(today);
+        String testControllerDeleteUsername = testControllerDeleteUser.getUsername();
+
+        userController.createUser(testControllerDeleteUser);
+        User createdControllerDeleteUser = userRepository.findByUsername(testControllerDeleteUsername);
+        Assert.assertNotNull(createdControllerDeleteUser);
+        Assert.assertEquals(testControllerDeleteUsername, createdControllerDeleteUser.getUsername());
+
+        userController.deleteUser(createdControllerDeleteUser.getId()); //represents cleanup
+        //userController.deleteUser(createdControllerDeleteUser.getId(), createdControllerDeleteUser.getPassword()); //represents cleanup
+        Assert.assertNull(userRepository.findByUsername(testControllerDeleteUsername));
     }
+
+    /*
+    @Test(expected = InvalidPassword.class)
+    public void deleteUserInvalid() {
+        Assert.assertNull(userRepository.findByUsername("testControllerDeleteUsernameInvalid"));
+
+        User testControllerDeleteUserInvalid = new User();
+        testControllerDeleteUserInvalid.setUsername("testControllerDeleteUsernameInvalid");
+        testControllerDeleteUserInvalid.setPassword("testControllerDeletePasswordInvalid");
+        testControllerDeleteUserInvalid.setBirthdate(today);
+        testControllerDeleteUserInvalid.setCreationDate(today);
+        String testControllerDeleteUsernameInvalid = testControllerDeleteUserInvalid.getUsername();
+
+        userController.createUser(testControllerDeleteUserInvalid);
+        User createdControllerDeleteUserInvalid = userRepository.findByUsername(testControllerDeleteUsernameInvalid);
+        Assert.assertNotNull(createdControllerDeleteUserInvalid);
+        Assert.assertEquals(testControllerDeleteUsernameInvalid, createdControllerDeleteUserInvalid.getUsername());
+
+        userController.deleteUser(createdControllerDeleteUserInvalid.getId()); //represents cleanup
+        //userController.deleteUser(createdControllerDeleteUserInvalid.getId(), createdControllerDeleteUserInvalid.getPassword()+"_");//throws InvalidPassword()
+        // represents cleanup
+        Assert.assertNotNull(userRepository.findByUsername(testControllerDeleteUsernameInvalid));
+        Assert.assertEquals(createdControllerDeleteUserInvalid, userRepository.findByUsername(testControllerDeleteUsernameInvalid));
+    }
+    */
 }

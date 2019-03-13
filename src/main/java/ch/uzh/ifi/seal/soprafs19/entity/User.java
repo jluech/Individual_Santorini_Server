@@ -55,25 +55,17 @@ public class User implements Serializable {
 
 	private String creationDateStr;
 
-	public Long getId() {
-		return id;
-	}
+	public Long getId() { return id; }
 
 	public void setId(Long id) { this.id = id; }
 
-	public String getLastName() {
-		return lastname;
-	}
+	public String getLastName() { return lastname; }
 
-	public void setLastName(String newlastname) {
-		this.lastname = newlastname;
-	}
+	public void setLastName(String newlastname) { this.lastname = newlastname; }
 
 	public String getFirstName() { return firstname; }
 
-	public void setFirstName(String newfirstname) {
-		this.firstname = newfirstname;
-	}
+	public void setFirstName(String newfirstname) { this.firstname = newfirstname; }
 
 	public Date getBirthdate() { return birthdate; }
 
@@ -94,21 +86,13 @@ public class User implements Serializable {
 	//@JsonProperty
 	public void setPassword(String password) { this.password = password; }
 
-	public String getToken() {
-		return token;
-	}
+	public String getToken() { return token; }
 
-	public void setToken(String token) {
-		this.token = token;
-	}
+	public void setToken(String token) { this.token = token; }
 
-	public UserStatus getStatus() {
-		return status;
-	}
+	public UserStatus getStatus() { return status; }
 
-	public void setStatus(UserStatus status) {
-		this.status = status;
-	}
+	public void setStatus(UserStatus status) { this.status = status; }
 
 	public Date getCreationDate() { return creationDate; }
 

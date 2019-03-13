@@ -14,16 +14,14 @@ public class UserController {
 
     private final UserService service;
 
-    UserController(UserService service) {
-        this.service = service;
-    }
+    UserController(UserService service) { this.service = service; }
 
     @GetMapping("/validate/token/{token}/{id}")
     @ResponseStatus(HttpStatus.OK)
     boolean validateToken(@PathVariable String token, @PathVariable long id) {
         log.info(String.format("validating token for user %s with %s", id, token));
         if(token==null || !this.service.validateUserToken(token, id)) {
-            throw new InexistingUser();
+            throw new InvalidToken();
         } else {
             return true;
         }
@@ -89,10 +87,12 @@ public class UserController {
         if(currentUser == null) {
             throw new InexistingUser();
         } else {
+            //TODO: add id directly to function call and remove findById() inside
             this.service.updateUser(updatedUser);
         }
     }
 
+    //TODO: security reason: add password field for verification
     @CrossOrigin
     @PutMapping("/users/login/{username}")
     @ResponseStatus(HttpStatus.ACCEPTED)
@@ -117,6 +117,7 @@ public class UserController {
         }
     }
 
+    //TODO: security reason: add password field for verification
     @DeleteMapping("/users/{id}")
     @ResponseStatus(HttpStatus.ACCEPTED)
     void deleteUser(@PathVariable long id) { service.deleteUser(id); }

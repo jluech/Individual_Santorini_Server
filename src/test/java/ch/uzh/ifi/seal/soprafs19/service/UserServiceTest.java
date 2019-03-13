@@ -170,7 +170,7 @@ public class UserServiceTest {
         User createdLoginUser = userService.createUser(testLoginUser);
 
         Assert.assertEquals(UserStatus.OFFLINE, createdLoginUser.getStatus());
-        userService.loginUser(createdLoginUser);
+        createdLoginUser = userService.loginUser(createdLoginUser);
         Assert.assertEquals(UserStatus.ONLINE, createdLoginUser.getStatus());
 
         userService.deleteUser(createdLoginUser.getId()); //cleanup
@@ -190,7 +190,7 @@ public class UserServiceTest {
         userService.loginUser(createdLogoutUser); //login first in order to be able to logout
 
         Assert.assertEquals(UserStatus.ONLINE, createdLogoutUser.getStatus());
-        userService.logoutUser(createdLogoutUser);
+        createdLogoutUser = userService.logoutUser(createdLogoutUser);
         Assert.assertEquals(UserStatus.OFFLINE, createdLogoutUser.getStatus());
 
         userService.deleteUser(createdLogoutUser.getId()); //cleanup

@@ -1,6 +1,7 @@
 package ch.uzh.ifi.seal.soprafs19.service;
 
 import ch.uzh.ifi.seal.soprafs19.constant.UserStatus;
+import ch.uzh.ifi.seal.soprafs19.controller.InexistingUser;
 import ch.uzh.ifi.seal.soprafs19.entity.User;
 import ch.uzh.ifi.seal.soprafs19.repository.UserRepository;
 import org.slf4j.Logger;
@@ -120,24 +121,31 @@ public class UserService {
         this.userRepository.delete(user);
     }
 
-    public void loginUser(User user) {
+    public User loginUser(User user) {
         user.setStatus(UserStatus.ONLINE);
         userRepository.save(user);
+        return user;
     }
 
-    public void logoutUser(User user) {
+    public User logoutUser(User user) {
         user.setStatus(UserStatus.OFFLINE);
         userRepository.save(user);
+        return user;
     }
 
     public boolean validateUserToken(String token, long id) {
-        User tokenUser = this.userRepository.findByToken(token);
-        User idUser = this.userRepository.findById(id);
-        return idUser.getToken().equals(tokenUser.getToken());
+        User tokenUser = userRepository.findByToken(token);
+        if(tokenUser == null) {
+            throw new InexistingUser();
+        }
+        return tokenUser.getId().equals(id);
     }
 
     public boolean validateUserPassword(String password, long id) {
         User idUser = this.userRepository.findById(id);
+        if(idUser == null) {
+            throw new InexistingUser();
+        }
         return idUser.getPassword().equals(password);
     }
 }
