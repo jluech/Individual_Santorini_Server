@@ -32,7 +32,6 @@ public class UserService {
     }
 
     public User getSingleUser(long id) {
-        User foundUser = this.userRepository.findById(id);
         return this.userRepository.findById(id);
     }
 
@@ -51,7 +50,7 @@ public class UserService {
 
         newUser.setStatus(UserStatus.OFFLINE);
         newUser.setToken(UUID.randomUUID().toString());
-        userRepository.save(newUser);
+        newUser = userRepository.save(newUser);
         log.debug("Created Information for User: {}", newUser);
         log.info("Registered user {} on {}", newUser.getUsername(), newUser.getCreationDateStr());
         return newUser;

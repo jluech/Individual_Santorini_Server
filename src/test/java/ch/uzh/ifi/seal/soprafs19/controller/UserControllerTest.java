@@ -416,11 +416,11 @@ public class UserControllerTest {
 
         userController.createUser(testControllerLoginUser);
         User createdControllerLoginUser = userRepository.findByUsername(testControllerLoginUsername);
-        Assert.assertEquals(createdControllerLoginUser.getStatus(), UserStatus.OFFLINE);
+        Assert.assertEquals(UserStatus.OFFLINE, createdControllerLoginUser.getStatus());
 
         userController.loginUser(createdControllerLoginUser.getUsername());
         //userController.loginUser(createdControllerLoginUser.getUsername(), createdControllerLoginUser.getPassword());
-        Assert.assertEquals(createdControllerLoginUser.getStatus(), UserStatus.ONLINE);
+        Assert.assertEquals(UserStatus.ONLINE, createdControllerLoginUser.getStatus());
 
         userController.deleteUser(createdControllerLoginUser.getId()); //cleanup
     }
@@ -486,13 +486,13 @@ public class UserControllerTest {
 
         userController.createUser(testControllerLogoutUser);
         User createdControllerLogoutUser = userRepository.findByUsername(testControllerLogoutUsername);
-        Assert.assertEquals(createdControllerLogoutUser.getStatus(), UserStatus.OFFLINE);
+        Assert.assertEquals(UserStatus.OFFLINE, createdControllerLogoutUser.getStatus());
 
         userController.loginUser(createdControllerLogoutUser.getUsername());
-        Assert.assertEquals(createdControllerLogoutUser.getStatus(), UserStatus.ONLINE);
+        Assert.assertEquals(UserStatus.ONLINE, createdControllerLogoutUser.getStatus());
 
         userController.logoutUser(createdControllerLogoutUser.getUsername());
-        Assert.assertEquals(createdControllerLogoutUser.getStatus(), UserStatus.OFFLINE);
+        Assert.assertEquals(UserStatus.OFFLINE, createdControllerLogoutUser.getStatus());
 
         userController.deleteUser(createdControllerLogoutUser.getId()); //cleanup
     }
@@ -510,14 +510,14 @@ public class UserControllerTest {
 
         userController.createUser(testControllerLogoutUserInexisting);
         User createdControllerLogoutUserInexisting = userRepository.findByUsername(testControllerLogoutUsernameInexisting);
-        Assert.assertEquals(createdControllerLogoutUserInexisting.getStatus(), UserStatus.OFFLINE);
+        Assert.assertEquals(UserStatus.OFFLINE, createdControllerLogoutUserInexisting.getStatus());
 
         userController.loginUser(createdControllerLogoutUserInexisting.getUsername());
-        Assert.assertEquals(createdControllerLogoutUserInexisting.getStatus(), UserStatus.ONLINE);
+        Assert.assertEquals(UserStatus.ONLINE, createdControllerLogoutUserInexisting.getStatus());
 
         userController.logoutUser(createdControllerLogoutUserInexisting.getUsername()+"&_");//throws InexistingUser()
-        Assert.assertNotEquals(createdControllerLogoutUserInexisting.getStatus(), UserStatus.OFFLINE);
-        Assert.assertEquals(createdControllerLogoutUserInexisting.getStatus(), UserStatus.ONLINE);
+        Assert.assertNotEquals(UserStatus.OFFLINE, createdControllerLogoutUserInexisting.getStatus());
+        Assert.assertEquals(UserStatus.ONLINE, createdControllerLogoutUserInexisting.getStatus());
 
         userController.deleteUser(createdControllerLogoutUserInexisting.getId()); //cleanup
     }
