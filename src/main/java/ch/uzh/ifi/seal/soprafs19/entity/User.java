@@ -69,9 +69,7 @@ public class User implements Serializable {
 		this.lastname = newlastname;
 	}
 
-	public String getFirstName() {
-		return firstname;
-	}
+	public String getFirstName() { return firstname; }
 
 	public void setFirstName(String newfirstname) {
 		this.firstname = newfirstname;

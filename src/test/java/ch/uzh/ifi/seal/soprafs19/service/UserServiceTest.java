@@ -60,9 +60,11 @@ public class UserServiceTest {
         Assert.assertNotNull(createdCreateUser.getToken());
         Assert.assertEquals(createdCreateUser.getStatus(),UserStatus.OFFLINE);
 
+        long testCreateUserId = createdCreateUser.getId();
+
         Assert.assertEquals(createdCreateUser, userRepository.findByToken(createdCreateUser.getToken()));
         Assert.assertEquals(createdCreateUser, userRepository.findByUsername(createdCreateUser.getUsername()));
-        Assert.assertEquals(createdCreateUser, userRepository.findById(createdCreateUser.getId()));
+        Assert.assertEquals(createdCreateUser, userRepository.findById(testCreateUserId));
 
         userService.deleteUser(createdCreateUser.getId()); //cleanup
     }
@@ -81,7 +83,6 @@ public class UserServiceTest {
         long testGetUserId = createdGetUserIdUser.getId();
 
         Assert.assertEquals(createdGetUserIdUser, userRepository.findById(testGetUserId));
-        Assert.assertEquals(createdGetUserIdUser, userRepository.findById(createdGetUserIdUser.getId()));
         Assert.assertEquals(testGetUserId, (long)userRepository.findById(testGetUserId).getId());
 
         Assert.assertEquals(createdGetUserIdUser, userService.getSingleUser(testGetUserId));
@@ -127,10 +128,10 @@ public class UserServiceTest {
         testUpdateUser.setCreationDate(today);
 
         User createdUpdateUserOriginal = userService.createUser(testUpdateUser);
-        long testUpdateId = createdUpdateUserOriginal.getId();
+        long createdUpdateUserOriginalId = createdUpdateUserOriginal.getId();
 
         User testNowUpdatedUser = new User();
-        testNowUpdatedUser.setId(testUpdateId);
+        testNowUpdatedUser.setId(createdUpdateUserOriginalId);
         testNowUpdatedUser.setFirstName("testUpdatedFirst");
         testNowUpdatedUser.setLastName("testUpdatedLast");
         testNowUpdatedUser.setUsername("testUpdatedUname");
@@ -140,9 +141,9 @@ public class UserServiceTest {
         testNowUpdatedUser.setCreationDate(today);
 
         Assert.assertEquals(createdUpdateUserOriginal.getId(), testNowUpdatedUser.getId());
-        userService.updateUser(testNowUpdatedUser); //updating via id
+        createdUpdateUserOriginal = userService.updateUser(testNowUpdatedUser); //updating via id
 
-        Assert.assertEquals(testUpdateId, (long)createdUpdateUserOriginal.getId()); //casting for unambiguous function call
+        Assert.assertEquals(createdUpdateUserOriginalId, (long)createdUpdateUserOriginal.getId()); //casting for unambiguous function call
         Assert.assertEquals("testUpdatedFirst", createdUpdateUserOriginal.getFirstName());
         Assert.assertEquals("testUpdatedLast", createdUpdateUserOriginal.getLastName());
         Assert.assertEquals("testUpdatedUname", createdUpdateUserOriginal.getUsername());

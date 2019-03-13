@@ -36,7 +36,6 @@ public class UserController {
         if(!this.service.validateUserPassword(password, id)) {
             throw new InvalidPassword();
         } else {
-            log.info("password is true");
             return true;
         }
     }
@@ -49,14 +48,13 @@ public class UserController {
     @PostMapping("/users")
     @ResponseStatus (HttpStatus.CREATED)
     String createUser(@RequestBody User newUser) {
-        //String createUser(@RequestBody User newUser) {
         String username = newUser.getUsername();
         if(this.service.getSingleUser(username) != null) {
             throw new ExistingUser();
         } else {
             User createdUser = this.service.createUser(newUser);
             String response = "/users/"+createdUser.getId().toString();
-            log.info(response);
+            //log.info(response);
             return response;
         }
     }
