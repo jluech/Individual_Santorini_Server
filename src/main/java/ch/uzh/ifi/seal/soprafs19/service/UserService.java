@@ -2,6 +2,7 @@ package ch.uzh.ifi.seal.soprafs19.service;
 
 import ch.uzh.ifi.seal.soprafs19.constant.UserStatus;
 import ch.uzh.ifi.seal.soprafs19.controller.InexistingUser;
+import ch.uzh.ifi.seal.soprafs19.controller.InvalidPassword;
 import ch.uzh.ifi.seal.soprafs19.entity.User;
 import ch.uzh.ifi.seal.soprafs19.repository.UserRepository;
 import org.slf4j.Logger;
@@ -64,6 +65,7 @@ public class UserService {
         String upFirstName = updatingUser.getFirstName();
         String upUsername = updatingUser.getUsername();
         String upPassword = updatingUser.getPassword();
+        String upCurrentPw = updatingUser.getCurrentPassword();
         Date upBirthdate = updatingUser.getBirthdate();
 
         log.info("Updating user data for user {}", currentUser.getUsername());
@@ -90,12 +92,11 @@ public class UserService {
             hasChanged = true;
         }
         if((upPassword != null) && (!upPassword.equals("")) && (!upPassword.equals(currentUser.getPassword()))) {
-            //TODO: security reason: add current password for verification along with new password to PUT fetch change password
-            String oldPassword = currentUser.getPassword();
-            currentUser.setPassword(upPassword);
-            String newPassword = currentUser.getPassword();
-            log.info("updated password successfully");
-            hasChanged = true;
+                String oldPassword = currentUser.getPassword();
+                currentUser.setPassword(upCurrentPw, upPassword);
+                String newPassword = currentUser.getPassword();
+                log.info("updated password successfully");
+                hasChanged = true;
         }
         if((upBirthdate != null) && (!upBirthdate.equals(currentUser.getBirthdate()))) {//includes changing birthdayStr
             String oldBdayDate = currentUser.getBirthdateStr();
@@ -115,14 +116,22 @@ public class UserService {
         return currentUser;//now is updated user
     }
 
-    public void deleteUser(long id) {
+    public void deleteUser(long id, String password) {
         User user = this.userRepository.findById(id);
-        this.userRepository.delete(user);
+        if(password.equals(user.getPassword())) {
+            this.userRepository.delete(user);
+        } else {
+            throw new InvalidPassword();
+        }
     }
 
-    public User loginUser(User user) {
-        user.setStatus(UserStatus.ONLINE);
-        userRepository.save(user);
+    public User loginUser(User user, String password) {
+        if(password.equals(user.getPassword())) {
+            user.setStatus(UserStatus.ONLINE);
+            userRepository.save(user);
+        } else {
+            throw new InvalidPassword();
+        }
         return user;
     }
 

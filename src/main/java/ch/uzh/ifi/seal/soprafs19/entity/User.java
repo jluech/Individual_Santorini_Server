@@ -1,6 +1,7 @@
 package ch.uzh.ifi.seal.soprafs19.entity;
 
 import ch.uzh.ifi.seal.soprafs19.constant.UserStatus;
+import ch.uzh.ifi.seal.soprafs19.controller.InvalidPassword;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -14,7 +15,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
 @Entity
-@JsonIgnoreProperties(value={"password"}, allowSetters = true)
+@JsonIgnoreProperties(value={"password", "currentPassword"}, allowSetters = true)
 public class User implements Serializable {
 	
 
@@ -37,12 +38,12 @@ public class User implements Serializable {
 	private String username;
 
 	@Column(nullable = false)
+	@JsonProperty("currentPassword")
+	private String currentPassword = "";
+
+	@Column(nullable = false)
 	@JsonProperty("password")
 	private String password;
-
-	//TODO: attach currentPassword to methods (create, update, get)
-	//@Column(nullable = false)
-	//private String currentPassword;
 	
 	@Column(nullable = false, unique = true) 
 	private String token;
@@ -79,12 +80,20 @@ public class User implements Serializable {
 
 	public void setUsername(String username) { this.username = username; }
 
-	//TODO: security reason: add currentPassword field for which to check against before assigning new password value
-	//@JsonIgnore
+	public String getCurrentPassword() { return currentPassword; }
+
+	public void setCurrentPassword(String currentPassword) { this.currentPassword = currentPassword; }
+
 	public String getPassword() { return password; }
 
-	//@JsonProperty
-	public void setPassword(String password) { this.password = password; }
+	public void setPassword(String currentPassword, String password) {
+		if((this.getPassword() == null) || (currentPassword.equals(this.getPassword()))) { //equal null if just created
+			this.password = password;
+			this.setCurrentPassword(password);
+		} else {
+			throw new InvalidPassword();
+		}
+	}
 
 	public String getToken() { return token; }
 

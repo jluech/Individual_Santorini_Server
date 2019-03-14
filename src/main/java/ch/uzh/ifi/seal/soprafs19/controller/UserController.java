@@ -87,21 +87,20 @@ public class UserController {
         if(currentUser == null) {
             throw new InexistingUser();
         } else {
-            //TODO: add id directly to function call and remove findById() inside
             this.service.updateUser(updatedUser);
         }
     }
 
-    //TODO: security reason: add password field for verification
     @CrossOrigin
     @PutMapping("/users/login/{username}")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    void loginUser(@PathVariable String username) {
+    void loginUser(@PathVariable String username, @RequestBody String password) {
+        log.info("password is "+password);
         User currentUser = this.service.getSingleUser(username);
         if(currentUser == null) {
             throw new InexistingUser();
         } else {
-            this.service.loginUser(currentUser);
+            this.service.loginUser(currentUser, password);
         }
     }
 
@@ -117,8 +116,9 @@ public class UserController {
         }
     }
 
-    //TODO: security reason: add password field for verification
     @DeleteMapping("/users/{id}")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    void deleteUser(@PathVariable long id) { service.deleteUser(id); }
+    void deleteUser(@PathVariable long id, @RequestBody String password) {
+        service.deleteUser(id, password);
+    }
 }
