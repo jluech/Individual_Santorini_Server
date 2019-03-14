@@ -66,7 +66,7 @@ public class UserServiceTest {
         Assert.assertEquals(createdCreateUser, userRepository.findByUsername(createdCreateUser.getUsername()));
         Assert.assertEquals(createdCreateUser, userRepository.findById(testCreateUserId));
 
-        userService.deleteUser(createdCreateUser.getId(), createdCreateUser.getPassword()); //cleanup
+        userService.deleteUser(createdCreateUser.getId(), createdCreateUser); //cleanup
     }
 
     @Test
@@ -88,7 +88,7 @@ public class UserServiceTest {
         Assert.assertEquals(createdGetUserIdUser, userService.getSingleUser(testGetUserId));
         Assert.assertEquals(createdGetUserIdUser, userService.getSingleUser(createdGetUserIdUser.getId()));
 
-        userService.deleteUser(createdGetUserIdUser.getId(), createdGetUserIdUser.getPassword()); //cleanup
+        userService.deleteUser(createdGetUserIdUser.getId(), createdGetUserIdUser); //cleanup
     }
 
     @Test
@@ -111,7 +111,7 @@ public class UserServiceTest {
         Assert.assertEquals(createdGetUserUsernameUser, userService.getSingleUser("testGetUsernameUsername"));
         Assert.assertEquals(createdGetUserUsernameUser, userService.getSingleUser(createdGetUserUsernameUser.getUsername()));
 
-        userService.deleteUser(createdGetUserUsernameUser.getId(), createdGetUserUsernameUser.getPassword()); //cleanup
+        userService.deleteUser(createdGetUserUsernameUser.getId(), createdGetUserUsernameUser); //cleanup
     }
 
     @Test
@@ -154,7 +154,7 @@ public class UserServiceTest {
         Assert.assertEquals(testNowUpdatedUser.getUsername(), createdUpdateUserOriginal.getUsername());
         Assert.assertEquals(testNowUpdatedUser.getPassword(), createdUpdateUserOriginal.getPassword());
 
-        userService.deleteUser(createdUpdateUserOriginal.getId(), createdUpdateUserOriginal.getPassword()); //cleanup
+        userService.deleteUser(createdUpdateUserOriginal.getId(), createdUpdateUserOriginal); //cleanup
     }
 
     @Test(expected = BadUpdateRequest.class)
@@ -197,7 +197,7 @@ public class UserServiceTest {
         Assert.assertEquals(testNowUpdatedUser.getUsername(), createdUpdateUserOriginal.getUsername());
         Assert.assertEquals(testNowUpdatedUser.getPassword(), createdUpdateUserOriginal.getPassword());
 
-        userService.deleteUser(createdUpdateUserOriginal.getId(), createdUpdateUserOriginal.getPassword()); //cleanup
+        userService.deleteUser(createdUpdateUserOriginal.getId(), createdUpdateUserOriginal); //cleanup
     }
 
     @Test
@@ -213,10 +213,10 @@ public class UserServiceTest {
         User createdLoginUser = userService.createUser(testLoginUser);
 
         Assert.assertEquals(UserStatus.OFFLINE, createdLoginUser.getStatus());
-        createdLoginUser = userService.loginUser(createdLoginUser, createdLoginUser.getPassword());
+        createdLoginUser = userService.loginUser(createdLoginUser, createdLoginUser);
         Assert.assertEquals(UserStatus.ONLINE, createdLoginUser.getStatus());
 
-        userService.deleteUser(createdLoginUser.getId(), createdLoginUser.getPassword()); //cleanup
+        userService.deleteUser(createdLoginUser.getId(), createdLoginUser); //cleanup
     }
 
     @Test
@@ -231,13 +231,13 @@ public class UserServiceTest {
         testLogoutUser.setCreationDate(today);
 
         User createdLogoutUser = userService.createUser(testLogoutUser);
-        userService.loginUser(createdLogoutUser, createdLogoutUser.getPassword()); //login first in order to be able to logout
+        userService.loginUser(createdLogoutUser, createdLogoutUser); //login first in order to be able to logout
 
         Assert.assertEquals(UserStatus.ONLINE, createdLogoutUser.getStatus());
         createdLogoutUser = userService.logoutUser(createdLogoutUser);
         Assert.assertEquals(UserStatus.OFFLINE, createdLogoutUser.getStatus());
 
-        userService.deleteUser(createdLogoutUser.getId(), createdLogoutUser.getPassword()); //cleanup
+        userService.deleteUser(createdLogoutUser.getId(), createdLogoutUser); //cleanup
     }
 
     @Test
@@ -258,7 +258,7 @@ public class UserServiceTest {
         Assert.assertEquals(createdDeleteUser, userRepository.findByUsername("testDeleteUsername"));
         Assert.assertEquals(createdDeleteUser, userRepository.findByUsername(createdDeleteUser.getUsername()));
 
-        userService.deleteUser(createdDeleteUser.getId(), createdDeleteUser.getPassword());
+        userService.deleteUser(createdDeleteUser.getId(), createdDeleteUser);
 
         Assert.assertNull(userRepository.findByUsername("testDeleteUsername"));
         Assert.assertNull(userRepository.findById(testDeleteId));

@@ -62,7 +62,7 @@ public class UserControllerTest {
         Assert.assertTrue(userController.validateToken(createdControllerValidateTokenUserToken, createdControllerValidateTokenUserId));
         Assert.assertTrue(userController.validateToken(createdControllerValidateTokenUser.getToken(), createdControllerValidateTokenUser.getId()));
 
-        userController.deleteUser(createdControllerValidateTokenUser.getId(), createdControllerValidateTokenUser.getPassword()); //cleanup
+        userController.deleteUser(createdControllerValidateTokenUser.getId(), createdControllerValidateTokenUser); //cleanup
     }
 
     @Test(expected = InexistingUser.class)
@@ -91,7 +91,7 @@ public class UserControllerTest {
         Assert.assertTrue(userController.validateToken(createdControllerValidateTokenEmptyToken,
                 createdControllerValidateTokenUserIdInexisting));//throws InexistingUser()
 
-        userController.deleteUser(createdControllerValidateTokenUserInexisting.getId(), createdControllerValidateTokenUserInexisting.getPassword()); //cleanup
+        userController.deleteUser(createdControllerValidateTokenUserInexisting.getId(), createdControllerValidateTokenUserInexisting); //cleanup
     }
 
     @Test(expected = InvalidToken.class)
@@ -129,7 +129,7 @@ public class UserControllerTest {
         String createdControllerValidateTokenDifferentToken = createdControllerValidateTokenUserDifferent.getToken();
         Assert.assertTrue(userController.validateToken(createdControllerValidateTokenDifferentToken, createdControllerValidateTokenUserIdInvalid));//throws InvalidToken()
 
-        userController.deleteUser(createdControllerValidateTokenUserInvalid.getId(), createdControllerValidateTokenUserInvalid.getPassword()); //cleanup
+        userController.deleteUser(createdControllerValidateTokenUserInvalid.getId(), createdControllerValidateTokenUserInvalid); //cleanup
     }
 
     @Test
@@ -153,7 +153,7 @@ public class UserControllerTest {
         Assert.assertTrue(userController.validatePassword(createdControllerValidatePasswordUserPassword, createdControllerValidatePasswordUserId));
         Assert.assertTrue(userController.validatePassword(createdControllerValidatePasswordUser.getPassword(), createdControllerValidatePasswordUser.getId()));
 
-        userController.deleteUser(createdControllerValidatePasswordUser.getId(), createdControllerValidatePasswordUser.getPassword()); //cleanup
+        userController.deleteUser(createdControllerValidatePasswordUser.getId(), createdControllerValidatePasswordUser); //cleanup
     }
 
     @Test(expected = InvalidPassword.class)
@@ -186,7 +186,7 @@ public class UserControllerTest {
         Assert.assertTrue(userController.validatePassword(createdControllerValidatePasswordEmptyPassword,
                 createdControllerValidatePasswordUserIdInvalid));//throws InvalidPassword()
 
-        userController.deleteUser(createdControllerValidatePasswordUserInvalid.getId(), createdControllerValidatePasswordUserInvalid.getPassword()); //cleanup
+        userController.deleteUser(createdControllerValidatePasswordUserInvalid.getId(), createdControllerValidatePasswordUserInvalid); //cleanup
     }
 
     @Test(expected = InexistingUser.class)
@@ -211,7 +211,7 @@ public class UserControllerTest {
         Assert.assertTrue(userController.validatePassword(createdControllerValidatePasswordUserPasswordInexisting,
                 (-1)*createdControllerValidatePasswordUserIdInexisting));//throws InexistingUser()
 
-        userController.deleteUser(createdControllerValidatePasswordUserInexisting.getId(), createdControllerValidatePasswordUserInexisting.getPassword()); //cleanup
+        userController.deleteUser(createdControllerValidatePasswordUserInexisting.getId(), createdControllerValidatePasswordUserInexisting); //cleanup
     }
 
     @Test
@@ -252,7 +252,7 @@ public class UserControllerTest {
         Assert.assertNotNull(createdControllerCreateUser.getId());
         Assert.assertNotNull(createdControllerCreateUser.getToken());
 
-        userController.deleteUser(createdControllerCreateUser.getId(), createdControllerCreateUser.getPassword()); //cleanup
+        userController.deleteUser(createdControllerCreateUser.getId(), createdControllerCreateUser); //cleanup
     }
 
     @Test(expected = ExistingUser.class)
@@ -287,7 +287,7 @@ public class UserControllerTest {
         String createdControllerCreateUserExistingUrl = userController.createUser(testControllerCreateUserDefinitelyExisting);//throws ExistingUser()
         Assert.assertNull(createdControllerCreateUserExistingUrl);
 
-        userController.deleteUser(createdControllerCreateUserExisting.getId(), createdControllerCreateUserExisting.getPassword()); //cleanup
+        userController.deleteUser(createdControllerCreateUserExisting.getId(), createdControllerCreateUserExisting); //cleanup
     }
 
     @Test
@@ -315,7 +315,7 @@ public class UserControllerTest {
         Assert.assertEquals(testControllerGetIdUser, testControllerGetIdFoundUser);
         Assert.assertEquals(testControllerGetIdUser.getUsername(), testControllerGetIdFoundUser.getUsername());
 
-        userController.deleteUser(createdControllerGetIdUser.getId(), createdControllerGetIdUser.getPassword()); //cleanup
+        userController.deleteUser(createdControllerGetIdUser.getId(), createdControllerGetIdUser); //cleanup
     }
 
     @Test(expected = InexistingUser.class)
@@ -337,7 +337,7 @@ public class UserControllerTest {
         User createdControllerGetIdUserDefinitelyInexisting = userController.getUserId((-1)*createdControllerGetIdUserInexisting.getId());//throws InexistingUser()
         Assert.assertNull(createdControllerGetIdUserDefinitelyInexisting);
 
-        userController.deleteUser(createdControllerGetIdUserInexisting.getId(), createdControllerGetIdUserInexisting.getPassword()); //cleanup
+        userController.deleteUser(createdControllerGetIdUserInexisting.getId(), createdControllerGetIdUserInexisting); //cleanup
     }
 
     @Test
@@ -365,7 +365,7 @@ public class UserControllerTest {
         Assert.assertEquals(testControllerGetUsernameUser, testControllerGetUsernameFoundUser);
         Assert.assertEquals(testControllerGetUsernameUser.getUsername(), testControllerGetUsernameFoundUser.getUsername());
 
-        userController.deleteUser(createdControllerGetUsernameUser.getId(), createdControllerGetUsernameUser.getPassword()); //cleanup
+        userController.deleteUser(createdControllerGetUsernameUser.getId(), createdControllerGetUsernameUser); //cleanup
     }
 
     @Test(expected = InexistingUser.class)
@@ -387,7 +387,7 @@ public class UserControllerTest {
         User createdControllerGetUsernameUserDefinitelyInexisting = userController.getUserUsername(createdControllerGetUsernameUserInexisting.getUsername()+"&_");
         Assert.assertNull(createdControllerGetUsernameUserDefinitelyInexisting);
 
-        userController.deleteUser(createdControllerGetUsernameUserInexisting.getId(), createdControllerGetUsernameUserInexisting.getPassword()); //cleanup
+        userController.deleteUser(createdControllerGetUsernameUserInexisting.getId(), createdControllerGetUsernameUserInexisting); //cleanup
     }
 
     //TODO: add error Inexisting update test
@@ -432,7 +432,7 @@ public class UserControllerTest {
         Assert.assertEquals(testControllerUpdateUserUpdated.getUsername(), createdControllerUpdateUserOriginal.getUsername());
         Assert.assertEquals(testControllerUpdateUserUpdated.getPassword(), createdControllerUpdateUserOriginal.getPassword());
 
-        userController.deleteUser(createdControllerUpdateUserOriginal.getId(), createdControllerUpdateUserOriginal.getPassword()); //cleanup
+        userController.deleteUser(createdControllerUpdateUserOriginal.getId(), createdControllerUpdateUserOriginal); //cleanup
     }
 
     @Test
@@ -451,11 +451,11 @@ public class UserControllerTest {
         User createdControllerLoginUser = userRepository.findByUsername(testControllerLoginUsername);
         Assert.assertEquals(UserStatus.OFFLINE, createdControllerLoginUser.getStatus());
 
-        userController.loginUser(createdControllerLoginUser.getUsername(), createdControllerLoginUser.getPassword());
+        userController.loginUser(createdControllerLoginUser.getUsername(), createdControllerLoginUser);
         createdControllerLoginUser = userRepository.findByUsername(createdControllerLoginUser.getUsername());//get updated user
         Assert.assertEquals(UserStatus.ONLINE, createdControllerLoginUser.getStatus());
 
-        userController.deleteUser(createdControllerLoginUser.getId(), createdControllerLoginUser.getPassword()); //cleanup
+        userController.deleteUser(createdControllerLoginUser.getId(), createdControllerLoginUser); //cleanup
     }
 
     @Test(expected = InexistingUser.class)
@@ -475,12 +475,12 @@ public class UserControllerTest {
         Assert.assertEquals(createdControllerLoginUserInexisting.getStatus(), UserStatus.OFFLINE);
 
         userController.loginUser(createdControllerLoginUserInexisting.getUsername()+"&_",
-                createdControllerLoginUserInexisting.getPassword());//throws InexistingUser()
+                createdControllerLoginUserInexisting);//throws InexistingUser()
 
         Assert.assertNotEquals(createdControllerLoginUserInexisting.getStatus(), UserStatus.ONLINE);
         Assert.assertEquals(createdControllerLoginUserInexisting.getStatus(), UserStatus.OFFLINE);
 
-        userController.deleteUser(createdControllerLoginUserInexisting.getId(), createdControllerLoginUserInexisting.getPassword()); //cleanup
+        userController.deleteUser(createdControllerLoginUserInexisting.getId(), createdControllerLoginUserInexisting); //cleanup
     }
 
     @Test(expected = InvalidPassword.class)
@@ -500,11 +500,13 @@ public class UserControllerTest {
         User createdControllerLoginUserInvalid = userRepository.findByUsername(testControllerLoginUsernameInvalid);
         Assert.assertEquals(createdControllerLoginUserInvalid.getStatus(), UserStatus.OFFLINE);
 
-        userController.loginUser(createdControllerLoginUserInvalid.getUsername(), createdControllerLoginUserInvalid.getPassword()+"_");//throws InvalidPassword()
+        User testControllerLoginInvalidPasswordUser = new User();
+        testControllerLoginInvalidPasswordUser.setPassword("", "_");//Setting invalid password
+        userController.loginUser(createdControllerLoginUserInvalid.getUsername(), testControllerLoginInvalidPasswordUser);//throws InvalidPassword()
         Assert.assertNotEquals(createdControllerLoginUserInvalid.getStatus(), UserStatus.ONLINE);
         Assert.assertEquals(createdControllerLoginUserInvalid.getStatus(), UserStatus.OFFLINE);
 
-        userController.deleteUser(createdControllerLoginUserInvalid.getId(), createdControllerLoginUserInvalid.getPassword()); //cleanup
+        userController.deleteUser(createdControllerLoginUserInvalid.getId(), createdControllerLoginUserInvalid); //cleanup
     }
 
     @Test
@@ -524,7 +526,7 @@ public class UserControllerTest {
         User createdControllerLogoutUser = userRepository.findByUsername(testControllerLogoutUsername);
         Assert.assertEquals(UserStatus.OFFLINE, createdControllerLogoutUser.getStatus());
 
-        userController.loginUser(createdControllerLogoutUser.getUsername(), createdControllerLogoutUser.getPassword());
+        userController.loginUser(createdControllerLogoutUser.getUsername(), createdControllerLogoutUser);
         createdControllerLogoutUser = userRepository.findByUsername(createdControllerLogoutUser.getUsername());
         Assert.assertEquals(UserStatus.ONLINE, createdControllerLogoutUser.getStatus());
 
@@ -532,7 +534,7 @@ public class UserControllerTest {
         createdControllerLogoutUser = userRepository.findByUsername(createdControllerLogoutUser.getUsername());
         Assert.assertEquals(UserStatus.OFFLINE, createdControllerLogoutUser.getStatus());
 
-        userController.deleteUser(createdControllerLogoutUser.getId(), createdControllerLogoutUser.getPassword()); //cleanup
+        userController.deleteUser(createdControllerLogoutUser.getId(), createdControllerLogoutUser); //cleanup
     }
 
     @Test(expected = InexistingUser.class)
@@ -552,7 +554,7 @@ public class UserControllerTest {
         User createdControllerLogoutUserInexisting = userRepository.findByUsername(testControllerLogoutUsernameInexisting);
         Assert.assertEquals(UserStatus.OFFLINE, createdControllerLogoutUserInexisting.getStatus());
 
-        userController.loginUser(createdControllerLogoutUserInexisting.getUsername(), createdControllerLogoutUserInexisting.getPassword());
+        userController.loginUser(createdControllerLogoutUserInexisting.getUsername(), createdControllerLogoutUserInexisting);
         createdControllerLogoutUserInexisting = userRepository.findByUsername(createdControllerLogoutUserInexisting.getUsername());
         Assert.assertEquals(UserStatus.ONLINE, createdControllerLogoutUserInexisting.getStatus());
 
@@ -561,7 +563,7 @@ public class UserControllerTest {
         Assert.assertNotEquals(UserStatus.OFFLINE, createdControllerLogoutUserInexisting.getStatus());
         Assert.assertEquals(UserStatus.ONLINE, createdControllerLogoutUserInexisting.getStatus());
 
-        userController.deleteUser(createdControllerLogoutUserInexisting.getId(), createdControllerLogoutUserInexisting.getPassword()); //cleanup
+        userController.deleteUser(createdControllerLogoutUserInexisting.getId(), createdControllerLogoutUserInexisting); //cleanup
     }
 
     @Test
@@ -582,7 +584,7 @@ public class UserControllerTest {
         Assert.assertNotNull(createdControllerDeleteUser);
         Assert.assertEquals(testControllerDeleteUsername, createdControllerDeleteUser.getUsername());
 
-        userController.deleteUser(createdControllerDeleteUser.getId(), createdControllerDeleteUser.getPassword()); //represents cleanup
+        userController.deleteUser(createdControllerDeleteUser.getId(), createdControllerDeleteUser); //represents cleanup
         Assert.assertNull(userRepository.findByUsername(testControllerDeleteUsername));
     }
 
@@ -604,9 +606,13 @@ public class UserControllerTest {
         Assert.assertNotNull(createdControllerDeleteUserInvalid);
         Assert.assertEquals(testControllerDeleteUsernameInvalid, createdControllerDeleteUserInvalid.getUsername());
 
-        userController.deleteUser(createdControllerDeleteUserInvalid.getId(), createdControllerDeleteUserInvalid.getPassword()+"_");//throws InvalidPassword()
-        // represents cleanup
+        User testControllerDeleteInvalidPasswordUser = new User();
+        testControllerDeleteInvalidPasswordUser.setPassword("", "_");//setting invalid password
+        userController.deleteUser(createdControllerDeleteUserInvalid.getId(), testControllerDeleteInvalidPasswordUser);//throws InvalidPassword()
+
         Assert.assertNotNull(userRepository.findByUsername(testControllerDeleteUsernameInvalid));
         Assert.assertEquals(createdControllerDeleteUserInvalid, userRepository.findByUsername(testControllerDeleteUsernameInvalid));
+
+        userController.deleteUser(createdControllerDeleteUserInvalid.getId(), createdControllerDeleteUserInvalid); //cleanup
     }
 }

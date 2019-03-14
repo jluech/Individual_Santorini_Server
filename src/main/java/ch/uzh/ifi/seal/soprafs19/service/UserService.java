@@ -116,29 +116,29 @@ public class UserService {
         return currentUser;//now is updated user
     }
 
-    public void deleteUser(long id, String password) {
-        User user = this.userRepository.findById(id);
-        if(password.equals(user.getPassword())) {
-            this.userRepository.delete(user);
+    public void deleteUser(long id, User passwordUser) {
+        User identifierUser = this.userRepository.findById(id);
+        if(passwordUser.getPassword().equals(identifierUser.getPassword())) {
+            this.userRepository.delete(identifierUser);
         } else {
             throw new InvalidPassword();
         }
     }
 
-    public User loginUser(User user, String password) {
-        if(password.equals(user.getPassword())) {
-            user.setStatus(UserStatus.ONLINE);
-            userRepository.save(user);
+    public User loginUser(User identifierUser, User passwordUser) {
+        if(passwordUser.getPassword().equals(identifierUser.getPassword())) {
+            identifierUser.setStatus(UserStatus.ONLINE);
+            userRepository.save(identifierUser);
         } else {
             throw new InvalidPassword();
         }
-        return user;
+        return identifierUser;
     }
 
-    public User logoutUser(User user) {
-        user.setStatus(UserStatus.OFFLINE);
-        userRepository.save(user);
-        return user;
+    public User logoutUser(User identifierUser) {
+        identifierUser.setStatus(UserStatus.OFFLINE);
+        userRepository.save(identifierUser);
+        return identifierUser;
     }
 
     public boolean validateUserToken(String token, long id) {

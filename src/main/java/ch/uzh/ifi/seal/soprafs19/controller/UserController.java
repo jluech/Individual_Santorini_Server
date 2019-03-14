@@ -7,6 +7,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*; //includes all mappings
 
+import java.awt.*;
+
 
 @RestController
 public class UserController {
@@ -94,13 +96,12 @@ public class UserController {
     @CrossOrigin
     @PutMapping("/users/login/{username}")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    void loginUser(@PathVariable String username, @RequestBody String password) {
-        log.info("password is "+password);
+    void loginUser(@PathVariable String username, @RequestBody User passwordUser) {
         User currentUser = this.service.getSingleUser(username);
         if(currentUser == null) {
             throw new InexistingUser();
         } else {
-            this.service.loginUser(currentUser, password);
+            this.service.loginUser(currentUser, passwordUser);
         }
     }
 
@@ -118,7 +119,7 @@ public class UserController {
 
     @DeleteMapping("/users/{id}")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    void deleteUser(@PathVariable long id, @RequestBody String password) {
-        service.deleteUser(id, password);
+    void deleteUser(@PathVariable long id, @RequestBody User passwordUser) {
+        service.deleteUser(id, passwordUser);
     }
 }
