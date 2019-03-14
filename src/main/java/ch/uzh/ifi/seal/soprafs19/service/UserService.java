@@ -92,11 +92,11 @@ public class UserService {
             hasChanged = true;
         }
         if((upPassword != null) && (!upPassword.equals("")) && (!upPassword.equals(currentUser.getPassword()))) {
-                String oldPassword = currentUser.getPassword();
-                currentUser.setPassword(upCurrentPw, upPassword);
-                String newPassword = currentUser.getPassword();
-                log.info("updated password successfully");
-                hasChanged = true;
+            String oldPassword = currentUser.getPassword();
+            currentUser.setPassword(upCurrentPw, upPassword);
+            String newPassword = currentUser.getPassword();
+            log.info("updated password successfully");
+            hasChanged = true;
         }
         if((upBirthdate != null) && (!upBirthdate.equals(currentUser.getBirthdate()))) {//includes changing birthdayStr
             String oldBdayDate = currentUser.getBirthdateStr();

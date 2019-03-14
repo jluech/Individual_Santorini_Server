@@ -423,14 +423,54 @@ public class UserControllerTest {
         userController.updateUser(createdControllerUpdateUserOriginalId, testControllerUpdateUserUpdated);//updating via id
         createdControllerUpdateUserOriginal = userRepository.findByUsername(testControllerUpdateUserUpdated.getUsername());
 
-        System.out.println(createdControllerUpdateUserOriginalId);
-        System.out.println((long)createdControllerUpdateUserOriginal.getId());
         Assert.assertEquals(createdControllerUpdateUserOriginalId, (long)createdControllerUpdateUserOriginal.getId()); //casting for unambiguous function call
         Assert.assertEquals(testControllerUpdateUserUpdated.getId(), createdControllerUpdateUserOriginal.getId());
         Assert.assertEquals(testControllerUpdateUserUpdated.getFirstName(), createdControllerUpdateUserOriginal.getFirstName());
         Assert.assertEquals(testControllerUpdateUserUpdated.getLastName(), createdControllerUpdateUserOriginal.getLastName());
         Assert.assertEquals(testControllerUpdateUserUpdated.getUsername(), createdControllerUpdateUserOriginal.getUsername());
         Assert.assertEquals(testControllerUpdateUserUpdated.getPassword(), createdControllerUpdateUserOriginal.getPassword());
+
+        userController.deleteUser(createdControllerUpdateUserOriginal.getId(), createdControllerUpdateUserOriginal); //cleanup
+    }
+
+    @Test(expected = InexistingUser.class)
+    public void updateUserInexisting() {
+        Assert.assertNull(userRepository.findByUsername("testControllerUpdateUsername"));
+        Assert.assertNull(userRepository.findByUsername("testControllerUpdatedUname"));
+
+        User testControllerUpdateUser = new User();
+        testControllerUpdateUser.setFirstName("testControllerUpdateFirstName");
+        testControllerUpdateUser.setLastName("testControllerUpdateLastName");
+        testControllerUpdateUser.setUsername("testControllerUpdateUsername");
+        testControllerUpdateUser.setCurrentPassword("testControllerUpdatePassword");
+        testControllerUpdateUser.setPassword(testControllerUpdateUser.getCurrentPassword(),
+                "testControllerUpdatePassword");
+        testControllerUpdateUser.setBirthdate(today);
+        testControllerUpdateUser.setCreationDate(today);
+
+        userController.createUser(testControllerUpdateUser);
+        String testControllerUpdateUserUsername = testControllerUpdateUser.getUsername();
+        User createdControllerUpdateUserOriginal = userRepository.findByUsername(testControllerUpdateUserUsername);
+        long createdControllerUpdateUserOriginalId = createdControllerUpdateUserOriginal.getId();
+
+        User testControllerUpdateUserUpdated = new User();
+        testControllerUpdateUserUpdated.setId(createdControllerUpdateUserOriginalId);
+        testControllerUpdateUserUpdated.setFirstName("testControllerUpdatedFirst");
+        testControllerUpdateUserUpdated.setLastName("testControllerUpdatedLast");
+        testControllerUpdateUserUpdated.setUsername("testControllerUpdatedUname");
+        testControllerUpdateUserUpdated.setPassword(testControllerUpdateUserUpdated.getCurrentPassword(),
+                "testControllerUpdatedPass");
+        testControllerUpdateUserUpdated.setCurrentPassword(testControllerUpdateUser.getPassword());
+
+        userController.updateUser((-1)*createdControllerUpdateUserOriginalId, testControllerUpdateUserUpdated);//throws InexistingUser()
+        createdControllerUpdateUserOriginal = userRepository.findByUsername(testControllerUpdateUserUpdated.getUsername());
+
+        Assert.assertEquals(createdControllerUpdateUserOriginalId, (long)createdControllerUpdateUserOriginal.getId()); //casting for unambiguous function call
+        Assert.assertEquals(testControllerUpdateUserUpdated.getId(), createdControllerUpdateUserOriginal.getId());
+        Assert.assertEquals(testControllerUpdateUser.getFirstName(), createdControllerUpdateUserOriginal.getFirstName());
+        Assert.assertEquals(testControllerUpdateUser.getLastName(), createdControllerUpdateUserOriginal.getLastName());
+        Assert.assertEquals(testControllerUpdateUser.getUsername(), createdControllerUpdateUserOriginal.getUsername());
+        Assert.assertEquals(testControllerUpdateUser.getPassword(), createdControllerUpdateUserOriginal.getPassword());
 
         userController.deleteUser(createdControllerUpdateUserOriginal.getId(), createdControllerUpdateUserOriginal); //cleanup
     }
